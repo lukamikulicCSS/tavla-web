@@ -65,32 +65,23 @@ Bez Resend varijabli forma u produkciji vraća jasnu poruku da slanje trenutno n
 
 ---
 
-## Stranice
-
-| URL | Sadržaj |
-|---|---|
-| `/` | Hero, brojke, tri uloge (kartice), Tavla AI, vrste objekata |
-| `/rjesenja` | Pregled rješenja |
-| `/rjesenja/gosti`, `/osoblje`, `/vlasnici` | Detalji po ulozi |
-| `/tavla-ai` | AI meni i AI napojnice (Uskoro) |
-| `/kako-funkcionira` | Tri koraka, usporedba, interaktivni demo |
-| `/o-nama` | Tim, zašto Tavla, iskustva korisnika |
-| `/kontakt` | Obrazac za demonstraciju |
-
 ## Gdje se što mijenja
 
 | Što | Datoteka |
 |---|---|
-| **Fotografije** | `content/images.ts` — slike u `public/images/`, prazno = prikaz sučelja |
-| **Brojke** | `content/stats.ts` — samo provjerene činjenice ili podaci s izvorom |
 | **Značajke i status „Uskoro”** | `content/features.ts` — stavke s `PROVJERI` potvrditi prije objave |
-| Navigacija | `content/navigation.ts` |
 | Tim (fotografije, biografije, LinkedIn) | `content/team.ts` — fotografije u `public/team/` |
 | Iskustva korisnika i logotipi partnera | `content/testimonials.ts` — samo stvarne, odobrene izjave |
-| Vrste objekata (+ fotografije) | `content/industries.ts` |
+| Česta pitanja | `content/faq.ts` |
+| Vrste objekata (+ fotografije) | `content/industries.ts` — fotografije u `public/images/industries/` |
+| Fotografija heroja | `content/navigation.ts` → `images.hero` |
 | Pravni podaci tvrtke, kontakt | `content/site.ts` |
 | Demo artikli i brojke | `content/demo-data.ts` |
 | Oznaka „nacrt” na pravnim stranicama | `components/layout/LegalPage.tsx` → `LEGAL_DRAFT = false` |
+
+Kad dodate fotografiju, sekcija se sama prebaci s ilustracije na fotografiju.
+
+---
 
 ## Struktura
 

@@ -13,11 +13,11 @@ export type Industry = {
 };
 
 export const industries: Industry[] = [
-  { id: "kafici", name: "Kafići", icon: "coffee", text: "Jutarnje gužve i pune terase, bez čekanja na konobara." },
-  { id: "restorani", name: "Restorani", icon: "utensils", text: "Pića i nove ture bez čekanja, osoblje ostaje uz goste." },
-  { id: "barovi", name: "Barovi", icon: "wine", text: "Šank je pun, a narudžba sa stola stiže točno." },
-  { id: "beach", name: "Beach barovi", icon: "umbrella", text: "Gost naruči s ležaljke, a vi znate točno gdje je." },
-  { id: "klubovi", name: "Noćni klubovi", icon: "music", text: "Separei naručuju bez traženja konobara u gužvi." },
-  { id: "hoteli", name: "Hoteli", icon: "hotel", text: "Lobby bar, terasa i bazen u jednom sustavu." },
-  { id: "ostalo", name: "Ostali objekti", icon: "store", text: "Svugdje gdje gost sjedi i naručuje." },
+  { id: "kafici", name: "Kafići", icon: "coffee", text: "Jutarnje gužve i terase pune stolova. Gost naruči kad je spreman, konobar nosi umjesto da hoda po narudžbu." },
+  { id: "restorani", name: "Restorani", icon: "utensils", text: "Pića i dodatne ture bez čekanja, dok osoblje ostaje uz goste kojima treba savjet." },
+  { id: "barovi", name: "Barovi", icon: "wine", text: "Glasno je i šank je pun. Narudžba sa stola stiže točno, bez dovikivanja." },
+  { id: "beach", name: "Beach barovi", icon: "umbrella", text: "Ležaljke daleko od šanka. Gost naruči s mjesta, a vi znate točno gdje je." },
+  { id: "klubovi", name: "Noćni klubovi", icon: "music", text: "Separei i stolovi s rezervacijom naručuju bez traženja konobara u gužvi." },
+  { id: "hoteli", name: "Hoteli", icon: "hotel", text: "Bar u predvorju, terasa i bazen s jednim sustavom za narudžbe." },
+  { id: "ostalo", name: "Ostali objekti", icon: "store", text: "Svugdje gdje gost sjedi, a narudžba treba stići brzo i točno." },
 ];

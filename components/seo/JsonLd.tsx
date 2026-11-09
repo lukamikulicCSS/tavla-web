@@ -1,6 +1,7 @@
 import { site } from "@/content/site";
+import { faq } from "@/content/faq";
 
-/** Schema.org: Organization, WebSite i SoftwareApplication. */
+/** Schema.org: Organization, WebSite, SoftwareApplication i FAQPage. */
 export function HomeJsonLd() {
   const org = {
     "@type": "Organization",
@@ -36,6 +37,10 @@ export function HomeJsonLd() {
       url: site.url,
       publisher: { "@id": `${site.url}/#organizacija` },
       // Cijena se namjerno ne navodi dok nije javno objavljena.
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
     },
   ];
 

@@ -16,7 +16,7 @@ export function WhyTavla() {
     <section aria-labelledby="zasto-naslov" className="surface-light bg-white py-24 text-ink sm:py-32">
       <div className="container-page grid gap-14 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
         <div className="lg:sticky lg:top-32 lg:self-start">
-          <SectionHeading id="zasto-naslov" tone="light" title="Zašto Tavla" />
+          <SectionHeading id="zasto-naslov" tone="light" title="Tehnologija koja radi iza dobrog ugostiteljstva." lead="Najbolja usluga je ona koju gost ne primijeti. Tavla radi u pozadini da bi osoblje moglo raditi ispred." />
         </div>
         <dl>
           {principles.map((p) => (

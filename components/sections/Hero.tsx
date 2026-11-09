@@ -4,7 +4,7 @@ import Image from "next/image";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { ChefHat, Check, Inbox } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { images } from "@/content/navigation";
+import { photos } from "@/content/images";
 import { demoVenue } from "@/content/demo-data";
 import { ButtonLink } from "@/components/ui/Button";
 import { PhoneFrame } from "@/components/product/PhoneFrame";
@@ -16,9 +16,9 @@ const ease = [0.22, 1, 0.36, 1] as const;
 export function Hero() {
   return (
     <section id="top" aria-labelledby="hero-naslov" className="relative isolate overflow-hidden bg-ink pb-20 pt-32 sm:pt-40 lg:pb-28">
-      {images.hero && (
+      {photos.hero.src && (
         <>
-          <Image src={images.hero} alt={images.heroAlt} fill priority sizes="100vw" className="-z-20 object-cover opacity-40" />
+          <Image src={photos.hero.src} alt={photos.hero.alt} fill priority sizes="100vw" className="-z-20 object-cover opacity-45" />
           <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/70 to-ink" />
         </>
       )}
@@ -30,8 +30,7 @@ export function Hero() {
             Nova razina ugostiteljskog iskustva.
           </h1>
           <p className="hero-rise mt-7 max-w-[34rem] text-lead text-soft [animation-delay:120ms]">
-            Tavla povezuje goste, osoblje i vlasnike ugostiteljskih objekata u jedno jednostavno digitalno iskustvo. Manje čekanja,
-            jednostavnije naručivanje i bolja kontrola poslovanja.
+            Gosti naručuju s mobitela, osoblje dobiva narudžbu odmah, a vi vidite cijeli objekt na jednom ekranu.
           </p>
           <m.div
             className="mt-10 flex flex-col gap-3 sm:flex-row"
@@ -39,8 +38,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease }}
           >
-            <ButtonLink href="#kontakt" size="lg">Zatraži demonstraciju</ButtonLink>
-            <ButtonLink href="#kako-funkcionira" size="lg" variant="secondary">Otkrij kako funkcionira</ButtonLink>
+            <ButtonLink href="/kontakt" size="lg">Zatraži demonstraciju</ButtonLink>
+            <ButtonLink href="/kako-funkcionira" size="lg" variant="secondary">Otkrij kako funkcionira</ButtonLink>
           </m.div>
         </div>
 
@@ -108,7 +107,7 @@ function HeroStage() {
     >
       <div aria-hidden className="stage-light absolute -inset-[20%] -z-10" />
 
-      <PhoneFrame className="mx-auto w-[min(72vw,19.5rem)]" label="Tavla na mobitelu gosta: odabir pića i slanje narudžbe">
+      <PhoneFrame className="mx-auto w-[min(60vw,19.5rem)]" label="Tavla na mobitelu gosta: odabir pića i slanje narudžbe">
         <GuestApp view={view} onViewChange={setView} flashId={flash} interactive={false} />
       </PhoneFrame>
 
@@ -156,7 +155,7 @@ function HeroStage() {
           <m.span
             key={sent}
             aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[86%] z-10 size-3 rounded-full bg-white shadow-[0_0_24px_6px_rgb(255_255_255/0.45)]"
+            className="pointer-events-none absolute left-1/2 top-[86%] z-10 size-3 rounded-full bg-electric shadow-[0_0_24px_8px_rgb(47_107_255/0.6)]"
             initial={{ x: 0, y: 0, opacity: 0, scale: 0.6 }}
             animate={{ x: ["0%", "300%", "900%"], y: ["0%", "-1600%", "-2800%"], opacity: [0, 1, 0], scale: [0.6, 1, 0.8] }}
             transition={{ duration: 0.9, ease: "easeInOut" }}

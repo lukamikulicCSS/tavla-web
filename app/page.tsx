@@ -1,39 +1,21 @@
-import { Nav } from "@/components/layout/Nav";
-import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/sections/Hero";
-import { Problem } from "@/components/sections/Problem";
-import { HowItWorks } from "@/components/sections/HowItWorks";
-import { Experiences } from "@/components/sections/Experiences";
-import { ProductDemo } from "@/components/sections/ProductDemo";
-import { Benefits } from "@/components/sections/Benefits";
-import { Industries } from "@/components/sections/Industries";
-import { WhyTavla } from "@/components/sections/WhyTavla";
-import { Team } from "@/components/sections/Team";
-import { Testimonials } from "@/components/sections/Testimonials";
-import { Faq } from "@/components/sections/Faq";
-import { Contact } from "@/components/sections/Contact";
-import { HomeJsonLd } from "@/components/seo/JsonLd";
+import type { Metadata } from "next";
+import { PageShell } from "@/components/layout/PageShell";
+import { Personas } from "@/components/sections/Personas";
+import { AiTeaser } from "@/components/sections/AiTeaser";
+import { PageHero } from "@/components/sections/PageHero";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "Rješenja",
+  description: "Tavla za goste, osoblje i vlasnike: digitalni meni, QR naručivanje i pregled poslovanja u jednom sustavu.",
+  alternates: { canonical: "/rjesenja" },
+};
+
+export default function SolutionsPage() {
   return (
-    <>
-      <HomeJsonLd />
-      <Nav />
-      <main id="sadrzaj">
-        <Hero />
-        <Problem />
-        <HowItWorks />
-        <Experiences />
-        <ProductDemo />
-        <Benefits />
-        <Industries />
-        <WhyTavla />
-        <Team />
-        <Testimonials />
-        <Faq />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <PageShell breadcrumb={[{ name: "Rješenja", path: "/rjesenja" }]}>
+      <PageHero title="Rješenja" lead="Odaberite za koga želite vidjeti kako Tavla radi." />
+      <Personas />
+      <AiTeaser />
+    </PageShell>
   );
 }

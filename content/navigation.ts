@@ -1,20 +1,22 @@
-export const mainNav = [
-  { label: "Početna", href: "/#top" },
-  { label: "Rješenja", href: "/#rjesenja" },
-  { label: "Kako funkcionira", href: "/#kako-funkcionira" },
-  { label: "O nama", href: "/#o-nama" },
-  { label: "Kontakt", href: "/#kontakt" },
+export type NavLink = { label: string; href: string; text?: string };
+export type NavItem = NavLink & { children?: NavLink[] };
+
+export const solutions: NavLink[] = [
+  { label: "Za goste", href: "/rjesenja/gosti", text: "Meni, narudžba i račun na mobitelu" },
+  { label: "Za osoblje", href: "/rjesenja/osoblje", text: "Narudžbe i pozivi sa stolova uživo" },
+  { label: "Za vlasnike", href: "/rjesenja/vlasnici", text: "Prodaja i stolovi u jednom pregledu" },
+  { label: "Tavla AI", href: "/tavla-ai", text: "AI meni i AI napojnice" },
 ];
 
-export const legalNav = [
+export const mainNav: NavItem[] = [
+  { label: "Rješenja", href: "/rjesenja", children: solutions },
+  { label: "Kako funkcionira", href: "/kako-funkcionira" },
+  { label: "O nama", href: "/o-nama" },
+  { label: "Kontakt", href: "/kontakt" },
+];
+
+export const legalNav: NavLink[] = [
   { label: "Politika privatnosti", href: "/privatnost" },
   { label: "Politika kolačića", href: "/kolacici" },
   { label: "Uvjeti korištenja", href: "/uvjeti" },
 ];
-
-/** Fotografije (dodati kad budu gotove). Prazno = stranica koristi prikaz proizvoda. */
-export const images = {
-  /** Pozadinska fotografija heroja, npr. "/images/hero.jpg" (min. 2400 px širine) */
-  hero: "",
-  heroAlt: "",
-};

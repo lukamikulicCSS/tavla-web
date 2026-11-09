@@ -11,6 +11,11 @@
   --color-line-dark: rgb(255 255 255 / 0.08);
   --color-line-light: rgb(11 11 13 / 0.08);
 
+  /* Električno plava — jedini naglasak brenda. Štedljivo: AI, „uživo”, aktivna stanja, fokus. */
+  --color-electric: #2f6bff;
+  --color-electric-light: #7aa2ff; /* za tekst na tamnoj podlozi (kontrast > 4.5:1) */
+  --color-electric-dark: #1f4fd8; /* za tekst na bijeloj podlozi */
+
   /* Boje statusa — koriste se SAMO unutar prikaza proizvoda */
   --color-ok: #34c759;
   --color-wait: #ff9f0a;
@@ -58,7 +63,7 @@
   .surface-light ::selection { background: var(--color-ink); color: #fff; }
 
   :focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--color-electric);
     outline-offset: 3px;
     border-radius: 6px;
   }
@@ -118,6 +123,14 @@
   background:
     radial-gradient(60% 50% at 50% 45%, rgb(255 255 255 / 0.09), transparent 70%),
     radial-gradient(35% 30% at 70% 30%, rgb(255 255 255 / 0.05), transparent 70%);
+}
+
+/* Plavi sjaj za AI dijelove */
+@utility electric-glow {
+  pointer-events: none;
+  background:
+    radial-gradient(45% 40% at 50% 50%, rgb(47 107 255 / 0.28), transparent 70%),
+    radial-gradient(30% 25% at 65% 35%, rgb(122 162 255 / 0.18), transparent 70%);
 }
 
 @utility container-page {

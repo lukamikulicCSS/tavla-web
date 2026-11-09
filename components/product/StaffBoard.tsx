@@ -12,7 +12,7 @@ const columns: { key: OrderStatus; title: string; action?: string }[] = [
   { key: "served", title: "Posluženo" },
 ];
 
-const dot: Record<OrderStatus, string> = { new: "bg-info", preparing: "bg-wait", served: "bg-ok" };
+const dot: Record<OrderStatus, string> = { new: "bg-electric", preparing: "bg-wait", served: "bg-ok" };
 
 /** Prikaz za osoblje: narudžbe po statusu i zahtjevi gostiju. */
 export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
@@ -30,8 +30,8 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
         </div>
         <span className="flex items-center gap-2 rounded-full bg-white/[0.06] px-3 py-1.5 text-xs text-soft">
           <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-60 motion-reduce:hidden" />
-            <span className="relative inline-flex size-2 rounded-full bg-ok" />
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-electric opacity-60 motion-reduce:hidden" />
+            <span className="relative inline-flex size-2 rounded-full bg-electric" />
           </span>
           Uživo
         </span>
@@ -95,7 +95,7 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.96 }}
                       transition={{ type: "spring", stiffness: 420, damping: 36 }}
-                      className={`rounded-xl p-3 ${o.mine && o.status === "new" ? "bg-white/[0.12] ring-1 ring-white/30" : "bg-white/[0.06]"}`}
+                      className={`rounded-xl p-3 ${o.mine && o.status === "new" ? "bg-white/[0.1] ring-1 ring-electric/70" : "bg-white/[0.06]"}`}
                     >
                       <div className="flex items-baseline justify-between gap-2">
                         <span className="text-base font-semibold tracking-[-0.02em]">Stol {o.table}</span>

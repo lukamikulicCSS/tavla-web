@@ -14,9 +14,9 @@ function initials(name: string) {
 
 export function Team() {
   return (
-    <section id="o-nama" aria-labelledby="tim-naslov" className="bg-ink py-24 sm:py-32">
+    <section id="o-nama" aria-labelledby="tim-naslov" className="bg-ink pb-24 pt-4 sm:pb-28">
       <div className="container-page">
-        <SectionHeading id="tim-naslov" title="Ljudi iza Tavle." lead="Tavlu razvijamo u Hrvatskoj, za ugostitelje koji žele da posluživanje teče bez zastoja." />
+        <SectionHeading id="tim-naslov" title="Ljudi iza Tavle." />
 
         <ul className="mt-16 grid gap-6 md:grid-cols-2">
           {team.map((p, i) => (

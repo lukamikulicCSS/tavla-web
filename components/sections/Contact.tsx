@@ -19,13 +19,14 @@ declare global {
   }
 }
 
-export function Contact() {
+export function Contact({ page = false }: { page?: boolean }) {
+  const H = page ? "h1" : "h2";
   return (
-    <section id="kontakt" aria-labelledby="kontakt-naslov" className="relative isolate overflow-hidden bg-ink py-24 sm:py-32">
-      <div aria-hidden className="stage-light absolute inset-x-0 top-0 -z-10 h-[60%]" />
+    <section id="kontakt" aria-labelledby="kontakt-naslov" className={`relative isolate overflow-hidden bg-ink ${page ? "pb-24 pt-32 sm:pb-32 sm:pt-40" : "py-24 sm:py-32"}`}>
+      <div aria-hidden className="electric-glow absolute -right-1/4 top-0 -z-10 h-[70%] w-[90%] opacity-50" />
       <div className="container-page grid gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
         <div className="max-w-xl lg:pt-4">
-          <h2 id="kontakt-naslov" className="text-h2 font-semibold">Spremni za drukčiju smjenu?</h2>
+          <H id="kontakt-naslov" className="text-h2 font-semibold">Zatražite demonstraciju</H>
           <p className="mt-6 text-lead text-soft">
             Pokazat ćemo vam kako Tavla može pojednostaviti svakodnevni rad i stvoriti bolje iskustvo za vaše goste.
           </p>
@@ -123,7 +124,7 @@ function ContactForm() {
     }
   }
 
-  const field = "mt-2 block w-full rounded-2xl bg-white/[0.06] px-4 py-3.5 text-base text-white placeholder:text-white/35 outline-none ring-1 ring-inset ring-white/10 transition-shadow focus:ring-2 focus:ring-white/60 aria-[invalid=true]:ring-red-400/80";
+  const field = "mt-2 block w-full rounded-2xl bg-white/[0.06] px-4 py-3.5 text-base text-white placeholder:text-white/35 outline-none ring-1 ring-inset ring-white/10 transition-shadow focus:ring-2 focus:ring-electric aria-[invalid=true]:ring-red-400/80";
 
   return (
     <div className="glass rounded-[2rem] p-6 sm:p-9">
@@ -180,7 +181,7 @@ function ContactForm() {
                   type="checkbox"
                   name="privacy"
                   required
-                  className="mt-0.5 size-5 shrink-0 cursor-pointer accent-white"
+                  className="mt-0.5 size-5 shrink-0 cursor-pointer accent-[#2f6bff]"
                   aria-invalid={!!errors.privacy}
                   aria-describedby={errors.privacy ? "privacy-err" : undefined}
                 />

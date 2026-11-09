@@ -20,7 +20,7 @@ export function Testimonials() {
               <h2 id="iskustva-korisnika" className="text-h3 font-semibold">Prvi objekti s Tavlom bit će predstavljeni ovdje.</h2>
               <p className="mt-3 leading-relaxed text-slate">Tražimo kafiće, restorane i barove koji žele uvesti Tavlu među prvima i pomoći nam da je oblikujemo prema stvarnim smjenama.</p>
             </div>
-            <ButtonLink href="#kontakt" variant="primary-dark" size="lg" className="shrink-0">Javite nam se</ButtonLink>
+            <ButtonLink href="/kontakt" variant="primary-dark" size="lg" className="shrink-0">Javite nam se</ButtonLink>
           </Reveal>
         </div>
       </section>

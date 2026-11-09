@@ -13,11 +13,11 @@ const steps = [
   { title: "Uživaj", text: "Osoblje odmah dobiva narudžbu i priprema je, a gost na mobitelu prati njezin status." },
 ];
 
-export function HowItWorks() {
+export function HowItWorks({ compact = false }: { compact?: boolean }) {
   return (
-    <section id="kako-funkcionira" aria-labelledby="kako-naslov" className="bg-ink py-24 sm:py-32">
+    <section id="koraci" aria-label="Tri koraka" className={`bg-ink ${compact ? "pb-20 pt-4 sm:pb-28" : "py-24 sm:py-32"}`}>
       <div className="container-page">
-        <SectionHeading id="kako-naslov" title="Tri koraka od stola do narudžbe." lead="Bez aplikacije za preuzimanje, bez registracije, bez čekanja konobara." />
+        {!compact && <SectionHeading title="Tri koraka od stola do narudžbe." lead="Bez aplikacije za preuzimanje, bez registracije, bez čekanja konobara." />}
         <DemoProvider autoAdvance={false}>
           <Stepper />
         </DemoProvider>
@@ -61,7 +61,7 @@ function Stepper() {
   const views: GuestView[] = ["menu", "menu", "status"];
 
   return (
-    <div ref={ref} className="mt-16 grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-24">
+    <div ref={ref} className="mt-10 grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-24">
       <ol className="space-y-2" aria-label="Koraci">
         {steps.map((s, i) => {
           const on = i === active;
@@ -77,7 +77,7 @@ function Stepper() {
                 className={`group relative w-full overflow-hidden rounded-[1.5rem] p-6 text-left transition-colors duration-500 sm:p-8 ${on ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"}`}
               >
                 <span className="flex items-baseline gap-5">
-                  <span className={`tabular text-sm transition-colors ${on ? "text-white" : "text-soft"}`}>{i + 1}</span>
+                  <span className={`tabular text-sm transition-colors ${on ? "text-electric-light" : "text-soft"}`}>{i + 1}</span>
                   <span>
                     <span className={`block text-h3 font-semibold transition-colors ${on ? "text-white" : "text-white/45"}`}>{s.title}</span>
                     <AnimatePresence initial={false}>
@@ -99,7 +99,7 @@ function Stepper() {
                 {on && auto && inView && !reduce && (
                   <m.span
                     aria-hidden
-                    className="absolute bottom-0 left-0 h-px bg-white/50"
+                    className="absolute bottom-0 left-0 h-[2px] bg-electric"
                     initial={{ width: "0%" }}
                     animate={{ width: "100%" }}
                     transition={{ duration: 4.2, ease: "linear" }}

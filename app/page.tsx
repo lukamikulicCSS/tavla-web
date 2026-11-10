@@ -1,6 +1,7 @@
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
+import { AiSoon } from "@/components/sections/AiSoon";
 import { Problem } from "@/components/sections/Problem";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Experiences } from "@/components/sections/Experiences";
@@ -21,6 +22,7 @@ export default function HomePage() {
       <Nav />
       <main id="sadrzaj">
         <Hero />
+        <AiSoon />
         <Problem />
         <HowItWorks />
         <Experiences />

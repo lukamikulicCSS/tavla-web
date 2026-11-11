@@ -4,7 +4,7 @@
  */
 export const site = {
   name: "Tavla",
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://tavla.hr").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://tavlaapp.com").replace(/\/$/, ""),
   locale: "hr_HR",
   defaultLocale: "hr" as const,
   /** Jezici za koje postoji sadržaj. Dodaj "en" kad bude content/en.ts */

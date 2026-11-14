@@ -15,7 +15,7 @@ export const site = {
     "Tavla je digitalni meni i sustav za naručivanje za kafiće, restorane, barove i hotele. Gosti naručuju sa svog mobitela, osoblje dobiva narudžbe odmah, a vlasnik ima pregled poslovanja.",
 
   contact: {
-    email: "" as string, // [UPISATI] npr. info@tavla.hr — prazno = prikazuje se samo kontakt forma
+    email: "info@tavlahr.com" as string, // prikazuje se u podnožju; stiže na Gmail preko Cloudflare Email Routinga (catch-all)
     phone: "" as string, // [UPISATI] neobavezno
     linkedin: "" as string, // [UPISATI] URL LinkedIn stranice tvrtke
   },
@@ -26,7 +26,7 @@ export const site = {
     oib: "[UPISATI: OIB]",
     address: "[UPISATI: adresa sjedišta]",
     registry: "[UPISATI: sud / registar i MBS]",
-    privacyEmail: "[UPISATI: e-mail za zahtjeve o privatnosti]",
+    privacyEmail: "info@tavlahr.com",
     lastUpdated: "[UPISATI: datum]",
   },
 } as const;

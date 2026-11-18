@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { ChefHat, Check, Inbox } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { images } from "@/content/navigation";
 import { demoVenue } from "@/content/demo-data";
 import { ButtonLink } from "@/components/ui/Button";
@@ -14,8 +14,14 @@ import { DemoProvider, itemById, useDemo } from "@/components/product/demo-store
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
   return (
-    <section id="top" aria-labelledby="hero-naslov" className="relative isolate overflow-hidden bg-ink pb-20 pt-32 sm:pt-40 lg:pb-28">
+    <section
+      ref={sectionRef}
+      id="top"
+      aria-labelledby="hero-naslov"
+      className="relative isolate overflow-hidden bg-ink pb-20 pt-32 sm:pt-40 lg:pb-28"
+    >
       {images.hero && (
         <>
           <Image src={images.hero} alt={images.heroAlt} fill priority sizes="100vw" className="-z-20 object-cover opacity-40" />
@@ -23,18 +29,22 @@ export function Hero() {
         </>
       )}
 
-      <div className="container-page grid items-center gap-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
-        <div className="max-w-[40rem]">
+      <PointerGlow targetRef={sectionRef} />
+
+      <div className="container-page grid items-center gap-14 lg:grid-cols-[1fr_1fr] lg:gap-8">
+        <div className="max-w-[36rem]">
           {/* CSS animacija (samo pomak) — tekst je vidljiv od prvog iscrtavanja, bez čekanja na JavaScript */}
-          <h1 id="hero-naslov" className="hero-rise text-display font-semibold">
+          <h1
+            id="hero-naslov"
+            className="hero-rise text-[clamp(2.5rem,1.45rem+3.3vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.04em]"
+          >
             Nova razina ugostiteljskog iskustva.
           </h1>
-          <p className="hero-rise mt-7 max-w-[34rem] text-lead text-soft [animation-delay:120ms]">
-            Tavla povezuje goste, osoblje i vlasnike ugostiteljskih objekata u jedno jednostavno digitalno iskustvo. Manje čekanja,
-            jednostavnije naručivanje i bolja kontrola poslovanja.
+          <p className="hero-rise mt-5 max-w-[30rem] text-[1.0625rem] leading-relaxed text-soft sm:text-lg [animation-delay:120ms]">
+            Digitalni meni i naručivanje za kafiće, restorane i hotele. Gost naručuje s mobitela, osoblje narudžbu vidi odmah.
           </p>
           <m.div
-            className="mt-10 flex flex-col gap-3 sm:flex-row"
+            className="mt-9 flex flex-col gap-3 sm:flex-row"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease }}
@@ -49,6 +59,109 @@ export function Hero() {
         </DemoProvider>
       </div>
     </section>
+  );
+}
+
+/**
+ * Plavo svjetlo koje prati miš (desktop) ili prst (mobitel).
+ * - Pomiče se samo transform (GPU), bez ponovnog iscrtavanja → glatko i na slabijim mobitelima.
+ * - Lagano "kasni" za pokazivačem (lerp) pa djeluje mekano, a ne nervozno.
+ * - Kad pokazivač izađe, svjetlo se polako vrati iza mobitela.
+ * - Uz "smanji pokrete" u sustavu svjetlo stoji na mjestu.
+ */
+function PointerGlow({ targetRef }: { targetRef: RefObject<HTMLElement | null> }) {
+  const glowRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    const section = targetRef.current;
+    const glow = glowRef.current;
+    if (!section || !glow) return;
+
+    const SIZE = 720;
+    let w = section.clientWidth;
+    let h = section.clientHeight;
+    // početni položaj: iza mobitela (desno na desktopu, dolje na mobitelu)
+    const home = () => (w >= 1024 ? { x: w * 0.72, y: h * 0.48 } : { x: w * 0.5, y: h * 0.72 });
+    let target = home();
+    const pos = { ...target };
+    let raf = 0;
+    let active = false;
+
+    const apply = () => {
+      glow.style.transform = `translate3d(${pos.x - SIZE / 2}px, ${pos.y - SIZE / 2}px, 0)`;
+    };
+    apply();
+    if (reduce) return;
+
+    const tick = () => {
+      pos.x += (target.x - pos.x) * 0.09;
+      pos.y += (target.y - pos.y) * 0.09;
+      apply();
+      if (Math.abs(target.x - pos.x) > 0.5 || Math.abs(target.y - pos.y) > 0.5) raf = requestAnimationFrame(tick);
+      else raf = 0;
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const moveTo = (clientX: number, clientY: number) => {
+      const r = section.getBoundingClientRect();
+      target = { x: clientX - r.left, y: clientY - r.top };
+      active = true;
+      glow.style.opacity = "1";
+      kick();
+    };
+    const goHome = () => {
+      active = false;
+      target = home();
+      glow.style.opacity = "0.75";
+      kick();
+    };
+
+    const onPointer = (e: PointerEvent) => {
+      if (e.pointerType === "mouse") moveTo(e.clientX, e.clientY);
+    };
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t) moveTo(t.clientX, t.clientY);
+    };
+    const onResize = () => {
+      w = section.clientWidth;
+      h = section.clientHeight;
+      if (!active) {
+        target = home();
+        kick();
+      }
+    };
+
+    section.addEventListener("pointermove", onPointer, { passive: true });
+    section.addEventListener("pointerleave", goHome);
+    // passive → ne blokira skrolanje; svjetlo prati prst i dok se stranica pomiče
+    section.addEventListener("touchstart", onTouch, { passive: true });
+    section.addEventListener("touchmove", onTouch, { passive: true });
+    section.addEventListener("touchend", goHome);
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      section.removeEventListener("pointermove", onPointer);
+      section.removeEventListener("pointerleave", goHome);
+      section.removeEventListener("touchstart", onTouch);
+      section.removeEventListener("touchmove", onTouch);
+      section.removeEventListener("touchend", goHome);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [targetRef, reduce]);
+
+  return (
+    <div
+      ref={glowRef}
+      aria-hidden
+      className="pointer-events-none absolute left-0 top-0 -z-10 size-[720px] opacity-75 transition-opacity duration-700 will-change-transform"
+      style={{
+        background:
+          "radial-gradient(closest-side, rgb(47 107 255 / 0.38), rgb(47 107 255 / 0.15) 45%, transparent 75%)",
+      }}
+    />
   );
 }
 
@@ -113,7 +226,7 @@ function HeroStage() {
       </PhoneFrame>
 
       {/* Obavijest za osoblje */}
-      <div className="absolute -right-1 top-[3%] w-[min(58vw,15rem)] sm:top-[16%] sm:-right-6 lg:-right-16 xl:-right-20" aria-hidden>
+      <div className="absolute -right-1 top-[11%] w-[min(58vw,15rem)] sm:top-[16%] sm:-right-6 lg:-right-16 xl:-right-20" aria-hidden>
         <AnimatePresence mode="wait">
           {order ? (
             <m.div

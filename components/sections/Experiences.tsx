@@ -12,7 +12,7 @@ import { DemoProvider } from "@/components/product/demo-store";
 
 export function Experiences() {
   return (
-    <div id="rjesenja">
+    <div id="rjesenja" data-section="iskustva">
       {/* Uvod */}
       <section aria-labelledby="iskustva-naslov" className="surface-light bg-white pt-24 text-ink sm:pt-32">
         <div className="container-page">

@@ -10,6 +10,11 @@ import { useEffect, useMemo, useState } from "react";
 import { demoCategories, demoMenu, demoVenue, formatEur } from "@/content/demo-data";
 import { itemById, lineCount, lineTotal, useDemo, type OrderStatus } from "./demo-store";
 import { StatusBar } from "./PhoneFrame";
+import { emit } from "@/lib/analytics/emit";
+import type { DemoAction } from "@/lib/analytics/events";
+
+/** Analitika demoa — samo stvarni klikovi posjetitelja (ne automatska animacija u heroju). */
+const demoEvent = (label: DemoAction) => emit("demo_interaction", { section: "demo", label });
 
 export type GuestView = "menu" | "cart" | "status";
 
@@ -120,7 +125,10 @@ export function GuestApp({
                   </div>
                   <button
                     tabIndex={tabIndex}
-                    onClick={() => demo.add(it.id)}
+                    onClick={() => {
+                      demoEvent("guest_add");
+                      demo.add(it.id);
+                    }}
                     aria-label={`Dodaj ${it.name}`}
                     className={`relative grid size-[9cqw] shrink-0 place-items-center rounded-full transition-[transform,background-color] duration-200 active:scale-90 ${
                       inCart ? "bg-ink text-white" : "bg-mist text-ink"
@@ -193,7 +201,10 @@ export function GuestApp({
                               <Minus className="size-[3.4cqw]" />
                             </button>
                             <span className="tabular w-[4cqw] text-center font-medium">{l.qty}</span>
-                            <button tabIndex={tabIndex} aria-label={`Dodaj još ${it.name}`} onClick={() => demo.add(l.id)} className="grid size-[7cqw] place-items-center rounded-full bg-mist">
+                            <button tabIndex={tabIndex} aria-label={`Dodaj još ${it.name}`} onClick={() => {
+                              demoEvent("guest_add");
+                              demo.add(l.id);
+                            }} className="grid size-[7cqw] place-items-center rounded-full bg-mist">
                               <Plus className="size-[3.4cqw]" />
                             </button>
                           </span>
@@ -212,7 +223,10 @@ export function GuestApp({
                           <button
                             key={s.id}
                             tabIndex={tabIndex}
-                            onClick={() => demo.add(s.id)}
+                            onClick={() => {
+                              demoEvent("guest_add");
+                              demo.add(s.id);
+                            }}
                             className="flex flex-1 items-center justify-between gap-[1cqw] rounded-[3.5cqw] bg-mist px-[3cqw] py-[2.4cqw] text-left text-[3.3cqw]"
                           >
                             <span className="min-w-0">
@@ -230,6 +244,7 @@ export function GuestApp({
                     tabIndex={tabIndex}
                     disabled={!count}
                     onClick={() => {
+                      demoEvent("guest_order");
                       demo.place();
                       setView("status");
                     }}
@@ -249,12 +264,17 @@ export function GuestApp({
           orderId={order?.id}
           lines={order?.items ?? []}
           tabIndex={tabIndex}
-          onRepeat={() => demo.repeat()}
+          onRepeat={() => {
+            demoEvent("guest_repeat");
+            demo.repeat();
+          }}
           onWaiter={() => {
+            demoEvent("guest_waiter");
             demo.request("waiter");
             setToast("Konobar je obaviješten");
           }}
           onBill={() => {
+            demoEvent("guest_bill");
             demo.request("bill");
             setToast("Račun je zatražen");
           }}

@@ -15,7 +15,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="kako-funkcionira" aria-labelledby="kako-naslov" className="bg-ink py-24 sm:py-32">
+    <section id="kako-funkcionira" data-section="kako-funkcionira" aria-labelledby="kako-naslov" className="bg-ink py-24 sm:py-32">
       <div className="container-page">
         <SectionHeading id="kako-naslov" title="Tri koraka od stola do narudžbe." lead="Bez aplikacije za preuzimanje, bez registracije, bez čekanja konobara." />
         <DemoProvider autoAdvance={false}>

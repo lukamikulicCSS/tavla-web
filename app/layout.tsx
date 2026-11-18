@@ -5,6 +5,7 @@ import { MotionProvider } from "@/components/ui/MotionProvider";
 import { ConsentProvider } from "@/components/privacy/consent";
 import { CookieBanner } from "@/components/privacy/CookieBanner";
 import { AnalyticsLoader } from "@/components/privacy/AnalyticsLoader";
+import { Tracker } from "@/components/analytics/Tracker";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CookieBanner />
           </MotionProvider>
           <AnalyticsLoader />
+          <Tracker />
         </ConsentProvider>
       </body>
     </html>

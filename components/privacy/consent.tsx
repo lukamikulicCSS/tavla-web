@@ -46,6 +46,13 @@ function clearAnalyticsCookies() {
       document.cookie = `${name}=; Max-Age=0; path=/; domain=.${location.hostname}`;
     }
   }
+  // vlastita analitika (lib/analytics/track.ts)
+  try {
+    sessionStorage.removeItem("tavla_sid");
+    sessionStorage.removeItem("tavla_attr");
+  } catch {
+    /* ignoriraj */
+  }
 }
 
 export function ConsentProvider({ children }: { children: ReactNode }) {

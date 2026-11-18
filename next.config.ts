@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+// `next dev` dobiva Cloudflare bindinge (D1 "DB") iz wrangler.jsonc — lokalna baza u .wrangler/
+initOpenNextCloudflareForDev();
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -19,15 +23,22 @@ const analyticsOrigin = originOf(process.env.NEXT_PUBLIC_ANALYTICS_SRC);
 const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 const turnstile = turnstileEnabled ? "https://challenges.cloudflare.com" : "";
 
+/**
+ * Cloudflare Web Analytics (bez kolačića, ne treba pristanak). Cloudflare beacon sam umeće
+ * u HTML kad je analitika uključena u dashboardu, pa ga CSP mora dopustiti.
+ */
+const cfBeaconScript = "https://static.cloudflareinsights.com";
+const cfBeaconConnect = "https://cloudflareinsights.com";
+
 const csp = [
   `default-src 'self'`,
   // 'unsafe-inline' je potreban za Next.js inline skripte kod statičkog renderiranja
   // (nonce bi forsirao dinamičko renderiranje svake stranice). Nema eval-a u produkciji.
-  `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} ${analyticsOrigin} ${turnstile}`,
+  `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} ${analyticsOrigin} ${turnstile} ${cfBeaconScript}`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data: blob:`,
   `font-src 'self'`,
-  `connect-src 'self' ${analyticsOrigin} ${turnstile} ${isDev ? "ws:" : ""}`,
+  `connect-src 'self' ${analyticsOrigin} ${turnstile} ${cfBeaconConnect} ${isDev ? "ws:" : ""}`,
   `frame-src ${turnstile || "'none'"}`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,

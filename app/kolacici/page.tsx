@@ -33,14 +33,35 @@ export default function CookiesPage() {
             <td>Zaštita kontakt obrasca od automatiziranog spama</td>
             <td>Sesija</td>
           </tr>
+        </tbody>
+      </table>
+
+      <h2>Druga pohrana u pregledniku</h2>
+      <table>
+        <thead>
+          <tr><th>Naziv</th><th>Kategorija</th><th>Svrha</th><th>Trajanje</th></tr>
+        </thead>
+        <tbody>
           <tr>
-            <td>[UPISATI: ovisno o alatu za analitiku]</td>
-            <td>Analitički</td>
-            <td>Anonimna statistika posjeta. Plausible i Umami po zadanim postavkama ne postavljaju kolačiće.</td>
-            <td>[UPISATI]</td>
+            <td>tavla_sid, tavla_attr (sessionStorage)</td>
+            <td>Analitički — samo uz pristanak</td>
+            <td>Slučajni ID sesije i izvor posjeta (domena, UTM) za vlastitu statistiku korištenja stranice. Ne sadrži IP adresu ni podatke o uređaju.</td>
+            <td>Do zatvaranja kartice</td>
           </tr>
         </tbody>
       </table>
+
+      <h2>Statistika bez kolačića</h2>
+      <p>
+        Za ukupan broj posjeta i brzinu učitavanja koristimo <strong>Cloudflare Web Analytics</strong>. Ne postavlja kolačiće, ne koristi
+        lokalnu pohranu i ne prepoznaje vas između posjeta, pa se učitava bez pristanka. Vidimo samo zbirne podatke (broj posjeta, izvor,
+        država, vrsta uređaja).
+      </p>
+      <p>
+        Vlastitu statistiku korištenja (koje sekcije su korisne, gdje posjetitelji odustaju) prikupljamo <strong>samo ako pristanete na
+        analitičke kolačiće</strong>. Pojedinačni događaji čuvaju se 13 mjeseci, a nakon toga samo zbirni dnevni podaci. Kad povučete
+        pristanak, slanje odmah prestaje, a ID sesije se briše.
+      </p>
       <p>Marketinške kolačiće trenutno ne koristimo. Ako ih uvedemo, ova tablica će biti dopunjena i tražit ćemo novi pristanak.</p>
 
       <h2>Upravljanje pristankom</h2>

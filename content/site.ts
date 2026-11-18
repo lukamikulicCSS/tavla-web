@@ -20,6 +20,14 @@ export const site = {
     linkedin: "" as string, // [UPISATI] URL LinkedIn stranice tvrtke
   },
 
+  /**
+   * Partneri koji se smiju javno navesti. Postaviti na true TEK kad postoji potpisan ugovor
+   * i dopuštenje za spominjanje. [PROVJERI: Corvus Pay]
+   */
+  partners: {
+    corvusPay: false as boolean,
+  },
+
   legal: {
     /** [UPISATI] puni naziv pravne osobe, npr. "Tavla d.o.o." */
     companyName: "[UPISATI: naziv pravne osobe]",

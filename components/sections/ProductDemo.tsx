@@ -10,6 +10,7 @@ import { GuestApp, type GuestView } from "@/components/product/GuestApp";
 import { StaffBoard } from "@/components/product/StaffBoard";
 import { OwnerDashboard } from "@/components/product/OwnerDashboard";
 import { DemoProvider, useDemo } from "@/components/product/demo-store";
+import { emit } from "@/lib/analytics/emit";
 
 type Tab = "guest" | "staff" | "owner";
 
@@ -21,7 +22,7 @@ const tabs: { key: Tab; label: string; icon: typeof Smartphone; hint: string }[]
 
 export function ProductDemo() {
   return (
-    <section id="demo" aria-labelledby="demo-naslov" className="bg-ink py-24 sm:py-32">
+    <section id="demo" data-section="demo" aria-labelledby="demo-naslov" className="bg-ink py-24 sm:py-32">
       <div className="container-page">
         <SectionHeading
           id="demo-naslov"
@@ -59,7 +60,11 @@ function DemoTabs() {
                 id={`tab-${t.key}`}
                 aria-selected={on}
                 aria-controls={`panel-${t.key}`}
-                onClick={() => setTab(t.key)}
+                onClick={() => {
+                  setTab(t.key);
+                  if (t.key === "owner") emit("demo_interaction", { section: "demo", label: "owner_open" });
+                }}
+                data-track={`demo-tab-${t.key}`}
                 className={`relative flex h-11 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors sm:px-5 ${on ? "text-ink" : "text-white/75 hover:text-white"}`}
               >
                 {on && <m.span layoutId="demo-tab" className="absolute inset-0 -z-10 rounded-full bg-white" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}

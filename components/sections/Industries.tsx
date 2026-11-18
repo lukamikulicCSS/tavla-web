@@ -29,7 +29,7 @@ export function Industries() {
   };
 
   return (
-    <section aria-labelledby="industrije-naslov" className="overflow-hidden bg-ink py-24 sm:py-32">
+    <section data-section="objekti" aria-labelledby="industrije-naslov" className="overflow-hidden bg-ink py-24 sm:py-32">
       <div className="container-page">
         <SectionHeading
           id="industrije-naslov"

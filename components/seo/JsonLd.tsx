@@ -59,6 +59,40 @@ export function BreadcrumbJsonLd({ items }: { items: { name: string; path: strin
   );
 }
 
+export function FaqJsonLd({ faq }: { faq: { q: string; a: string }[] }) {
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+      }}
+    />
+  );
+}
+
+/** SoftwareApplication s popisom značajki (samo dostupne + jasno označene u razvoju). */
+export function AiSoftwareJsonLd({ features, description }: { features: { name: string; status: string }[]; description: string }) {
+  const label = (s: string) => (s === "live" ? "" : s === "soon" ? " (u razvoju)" : " (u planu)");
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Tavla",
+        applicationCategory: "BusinessApplication",
+        applicationSubCategory: "Digitalni meni, QR naručivanje i AI za ugostiteljstvo",
+        operatingSystem: "Web, iOS, Android",
+        description,
+        url: `${site.url}/tavla-ai`,
+        inLanguage: "hr-HR",
+        featureList: features.map((f) => `${f.name}${label(f.status)}`),
+        publisher: { "@id": `${site.url}/#organizacija` },
+      }}
+    />
+  );
+}
+
 function JsonLd({ data }: { data: unknown }) {
   // Escapiranje "<" sprječava zatvaranje <script> taga iz sadržaja
   const json = JSON.stringify(data).replace(/</g, "\\u003c");

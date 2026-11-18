@@ -18,7 +18,7 @@ const benefits = [
 
 export function Benefits() {
   return (
-    <section aria-labelledby="koristi-naslov" className="surface-light bg-mist py-24 text-ink sm:py-32">
+    <section data-section="koristi" aria-labelledby="koristi-naslov" className="surface-light bg-mist py-24 text-ink sm:py-32">
       <div className="container-page">
         <SectionHeading id="koristi-naslov" tone="light" title="Napravljeno da ugostiteljstvo radi bolje." />
         <ul className="mt-16 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">

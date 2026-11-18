@@ -7,7 +7,7 @@ import { useConsent } from "./consent";
 
 const categories = [
   { key: "necessary", title: "Nužni", text: "Pamte vaš izbor o kolačićima i štite obrazac od zloupotrebe. Bez njih stranica ne radi ispravno.", locked: true },
-  { key: "analytics", title: "Analitički", text: "Anonimna statistika posjeta koja nam pokazuje koje su stranice korisne. Ne koristimo ih za oglašavanje." },
+  { key: "analytics", title: "Analitički", text: "Statistika korištenja stranice: koje sekcije čitate i na što kliknete. Bez IP adrese, bez praćenja između posjeta, ne koristimo je za oglašavanje." },
   { key: "marketing", title: "Marketinški", text: "Trenutno ih ne koristimo. Ako ih uvedemo, tražit ćemo vaš pristanak." },
 ] as const;
 

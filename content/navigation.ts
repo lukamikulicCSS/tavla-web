@@ -1,5 +1,5 @@
+/** Glavna navigacija. "Tavla AI" (mega izbornik) umeće se iza "Rješenja" — vidi Nav.tsx. */
 export const mainNav = [
-  { label: "Početna", href: "/#top" },
   { label: "Rješenja", href: "/#rjesenja" },
   { label: "Kako funkcionira", href: "/#kako-funkcionira" },
   { label: "O nama", href: "/#o-nama" },

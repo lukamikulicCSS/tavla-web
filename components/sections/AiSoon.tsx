@@ -1,4 +1,5 @@
-import { Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
 
 /**
@@ -20,7 +21,7 @@ const items = [
 
 export function AiSoon() {
   return (
-    <section aria-labelledby="uskoro-naslov" className="relative isolate overflow-hidden bg-ink pb-20 sm:pb-24">
+    <section data-section="uskoro" aria-labelledby="uskoro-naslov" className="relative isolate overflow-hidden bg-ink pb-20 sm:pb-24">
       {/* blagi plavi sjaj */}
       <div
         aria-hidden
@@ -36,6 +37,13 @@ export function AiSoon() {
               Tavla AI dolazi u vaš objekt.
             </h2>
             <p className="mt-3 max-w-sm text-soft">Dvije nove značajke na kojima radimo, za goste i za osoblje.</p>
+            <Link
+              href="/tavla-ai"
+              data-track="uskoro-cta-tavla-ai"
+              className="mt-6 inline-flex items-center gap-1.5 rounded-full text-[0.9375rem] font-medium text-[#7aa2ff] transition-colors hover:text-white"
+            >
+              Sve o Tavla AI <ArrowUpRight className="size-4" aria-hidden />
+            </Link>
           </div>
 
           <ul className="grid gap-3 sm:grid-cols-2">

@@ -4,11 +4,12 @@
  * status:
  *   "live" — radi u trenutnoj verziji aplikacije, prikazuje se kao dostupno
  *   "soon" — u razvoju, prikazuje se s oznakom "Uskoro"
+ *   "planned" — u planu; prikazuje se SAMO na stranicama Tavla AI uz oznaku "U planu", nikad kao dostupno
  *
  * Kad nešto pustite u produkciju, samo promijenite status.
  * Stavke označene s PROVJERI treba potvrditi prije objave.
  */
-export type FeatureStatus = "live" | "soon";
+export type FeatureStatus = "live" | "soon" | "planned";
 
 export type Feature = {
   id: string;

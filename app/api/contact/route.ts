@@ -1,36 +1,14 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { createHash } from "node:crypto";
+import type { NextRequest } from "next/server";
 import { contactSchema, venueTypes } from "@/lib/contact-schema";
 import { rateLimit } from "@/lib/rate-limit";
+import { classifySource, clientIp, escapeHtml, getDb, getSecret, ipKey, isoDay, json, sameOrigin } from "@/lib/server/request";
+import { subscribe } from "@/lib/server/newsletter";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MIN_FILL_MS = 3000; // brže od ovoga ispunjavaju samo botovi
 const MAX_BODY = 16_000;
-
-const json = (status: number, body: Record<string, unknown>, headers?: HeadersInit) =>
-  NextResponse.json(body, { status, headers: { "Cache-Control": "no-store", ...headers } });
-
-const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
-function clientIp(req: NextRequest) {
-  const fwd = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return fwd || req.headers.get("x-real-ip") || "unknown";
-}
-
-/** CSRF zaštita: zahtjev mora doći s iste domene (Origin == Host). */
-function sameOrigin(req: NextRequest) {
-  const origin = req.headers.get("origin");
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
-  if (!origin || !host) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
 
 async function verifyTurnstile(token: string | undefined, ip: string) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
@@ -54,8 +32,7 @@ export async function POST(req: NextRequest) {
 
   const ip = clientIp(req);
   // IP se ne sprema — koristi se samo jednosmjerni hash kao ključ za limit.
-  const ipKey = createHash("sha256").update(ip).digest("hex").slice(0, 32);
-  const limit = await rateLimit(ipKey);
+  const limit = await rateLimit(ipKey(req));
   if (!limit.ok) {
     return json(429, { error: "Poslali ste previše upita u kratkom vremenu. Pokušajte ponovno za nekoliko minuta." }, { "Retry-After": String(limit.retryAfter) });
   }
@@ -86,13 +63,14 @@ export async function POST(req: NextRequest) {
     return json(400, { error: "Provjera da niste robot nije uspjela. Osvježite stranicu i pokušajte ponovno." });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL;
-  const from = process.env.CONTACT_FROM_EMAIL;
+  const apiKey = await getSecret("RESEND_API_KEY");
+  const to = await getSecret("CONTACT_TO_EMAIL");
+  const from = await getSecret("CONTACT_FROM_EMAIL");
 
   if (!apiKey || !to || !from) {
     if (process.env.NODE_ENV !== "production") {
       console.info("[kontakt] Resend nije podešen — upit nije poslan (dev način).", { business: data.business, venueType: data.venueType });
+      await afterSend(data);
       return json(200, { ok: true, dev: true });
     }
     console.error("[kontakt] Nedostaju RESEND_API_KEY / CONTACT_TO_EMAIL / CONTACT_FROM_EMAIL");
@@ -139,7 +117,53 @@ export async function POST(req: NextRequest) {
     return json(502, { error: "Slanje nije uspjelo. Pokušajte ponovno za minutu." });
   }
 
+  await afterSend(data);
   return json(200, { ok: true });
+}
+
+type Parsed = ReturnType<typeof contactSchema.parse>;
+
+/**
+ * Nakon uspješnog slanja: upit u tablicu `leads` (za KPI ploču) i, ako je označeno, prijava na newsletter.
+ * Greške ovdje ne smiju srušiti odgovor korisniku — mail je već poslan.
+ */
+async function afterSend(data: Parsed) {
+  const db = await getDb();
+  if (!db) return;
+  const now = Date.now();
+  const src = data.src ?? {};
+  try {
+    await db
+      .prepare(
+        `INSERT INTO leads (created_at, day, name, business, venue_type, source, ref, utm_source, utm_medium, utm_campaign, landing, newsletter)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)`,
+      )
+      .bind(
+        now,
+        isoDay(now),
+        data.name,
+        data.business,
+        data.venueType,
+        // landing postoji samo kad je posjetitelj pristao na analitiku; inače izvor ne znamo
+        src.landing ? classifySource(src.ref, src.utmSource) : "nepoznato",
+        src.ref ?? null,
+        src.utmSource ?? null,
+        src.utmMedium ?? null,
+        src.utmCampaign ?? null,
+        src.landing ?? null,
+        data.newsletter ? 1 : 0,
+      )
+      .run();
+  } catch (err) {
+    console.error("[kontakt] D1 leads", err instanceof Error ? err.message : err);
+  }
+  if (data.newsletter) {
+    try {
+      await subscribe(db, data.email.toLowerCase(), "kontakt");
+    } catch (err) {
+      console.error("[kontakt] newsletter", err instanceof Error ? err.message : err);
+    }
+  }
 }
 
 export function GET() {

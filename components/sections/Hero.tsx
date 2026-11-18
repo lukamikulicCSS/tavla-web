@@ -19,6 +19,7 @@ export function Hero() {
     <section
       ref={sectionRef}
       id="top"
+      data-section="hero"
       aria-labelledby="hero-naslov"
       className="relative isolate overflow-hidden bg-ink pb-20 pt-32 sm:pt-40 lg:pb-28"
     >
@@ -49,8 +50,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease }}
           >
-            <ButtonLink href="#kontakt" size="lg">Zatraži demonstraciju</ButtonLink>
-            <ButtonLink href="#kako-funkcionira" size="lg" variant="secondary">Otkrij kako funkcionira</ButtonLink>
+            <ButtonLink href="#kontakt" size="lg" data-track="hero-cta-demo">Zatraži demonstraciju</ButtonLink>
+            <ButtonLink href="#kako-funkcionira" size="lg" variant="secondary" data-track="hero-kako-funkcionira">Otkrij kako funkcionira</ButtonLink>
           </m.div>
         </div>
 

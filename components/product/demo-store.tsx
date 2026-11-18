@@ -7,6 +7,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 import { demoMenu, demoRequests, demoSeedOrders, demoVenue, type MenuItem } from "@/content/demo-data";
 
+
 export type OrderStatus = "new" | "preparing" | "served";
 export type Line = { id: string; qty: number };
 export type Order = { id: string; table: number; items: Line[]; status: OrderStatus; createdAt: number; mine?: boolean };

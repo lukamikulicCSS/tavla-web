@@ -29,6 +29,18 @@ export const contactSchema = z.object({
   venueType: z.enum(venueValues, { message: "Odaberite vrstu objekta." }),
   message: z.string().transform(clean).pipe(z.string().min(10, "Napišite barem nekoliko riječi.").max(2000, "Poruka može imati najviše 2000 znakova.")),
   privacy: z.literal(true, { message: "Potrebno je potvrditi da ste pročitali obavijest o privatnosti." }),
+  /** Zasebna, neobavezna privola za newsletter (nikad unaprijed označena). */
+  newsletter: z.boolean().optional(),
+  /** Izvor posjeta iz sesije — postoji samo ako je posjetitelj pristao na analitiku. */
+  src: z
+    .object({
+      ref: z.string().max(120).optional(),
+      utmSource: z.string().max(60).optional(),
+      utmMedium: z.string().max(60).optional(),
+      utmCampaign: z.string().max(80).optional(),
+      landing: z.string().max(120).optional(),
+    })
+    .optional(),
   // Zamke za spam — ne prikazuju se ljudima
   website: z.string().max(0).optional().or(z.literal("")),
   startedAt: z.number().int().positive(),

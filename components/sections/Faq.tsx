@@ -11,7 +11,7 @@ export function Faq() {
   const base = useId();
 
   return (
-    <section aria-labelledby="faq-naslov" className="surface-light bg-white pb-24 pt-8 text-ink sm:pb-32">
+    <section data-section="faq" aria-labelledby="faq-naslov" className="surface-light bg-white pb-24 pt-8 text-ink sm:pb-32">
       <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
         <SectionHeading id="faq-naslov" tone="light" title="Česta pitanja." lead="Ne vidite svoje pitanje? Pošaljite ga kroz obrazac i odgovorit ćemo izravno." />
         <ul className="border-b border-line-light">

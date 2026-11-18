@@ -49,10 +49,33 @@ export default function PrivacyPage() {
             <td>6 mjeseci</td>
           </tr>
           <tr>
-            <td>Anonimni podaci o posjetu (samo uz pristanak)</td>
-            <td>Statistika korištenja stranice</td>
-            <td>Privola (t. a)</td>
-            <td>[UPISATI: prema postavkama alata za analitiku]</td>
+            <td>Ime i prezime, naziv objekta, vrsta objekta i izvor posjeta (npr. „Google”, UTM kampanja — samo ako ste pristali na analitiku). E-mail i poruka se ne spremaju u bazu, stižu nam samo e-poštom.</td>
+            <td>Evidencija upita za demonstraciju i mjerenje koji kanali donose upite</td>
+            <td>Legitimni interes (t. f)</td>
+            <td>[UPISATI: npr. 24 mjeseca od upita]</td>
+          </tr>
+          <tr>
+            <td>Zbirna statistika posjeta bez kolačića (Cloudflare Web Analytics): broj posjeta, izvor, država, vrsta uređaja, brzina učitavanja</td>
+            <td>Mjerenje posjećenosti i tehničke kvalitete stranice</td>
+            <td>Legitimni interes (t. f). Ne koristi kolačiće ni identifikatore u pregledniku.</td>
+            <td>Prema postavkama Cloudflarea; vidimo samo zbirne podatke</td>
+          </tr>
+          <tr>
+            <td>
+              Podaci o korištenju stranice (samo uz pristanak „Analitički”): posjećene stranice, vrijeme provedeno na sekciji, dubina skrolanja,
+              klikovi na gumbe (položaj u odnosu na sekciju), domena s koje ste došli, UTM parametri, vrsta uređaja i raspon širine ekrana,
+              slučajni ID sesije koji se čuva samo u sessionStorage i briše zatvaranjem kartice. Bez IP adrese, bez user-agenta, bez kolačića,
+              bez sadržaja koji upisujete u obrasce.
+            </td>
+            <td>Poboljšanje stranice: što je posjetiteljima korisno, gdje odustaju i koliko ih zatraži demonstraciju</td>
+            <td>Privola (t. a), koju možete povući u bilo kojem trenutku</td>
+            <td>Pojedinačni događaji 13 mjeseci, nakon toga samo zbirni dnevni podaci bez ID-a sesije</td>
+          </tr>
+          <tr id="newsletter">
+            <td>E-mail adresa, izvor prijave (podnožje, obrazac, stranica značajke), interes (npr. AI Tips), verzija teksta privole i vrijeme prijave, potvrde i odjave</td>
+            <td>Slanje novosti i ponuda Tavle, najviše jednom mjesečno. Prijava se potvrđuje klikom na link iz maila (dvostruka potvrda).</td>
+            <td>Privola (t. a). Povlačenje: link „Odjava” u svakom mailu ili e-mail na {L.privacyEmail}.</td>
+            <td>Do odjave. Nepotvrđene prijave brišemo nakon 30 dana. Nakon odjave čuvamo samo adresu i vrijeme odjave kao dokaz, [UPISATI: npr. 3 godine].</td>
           </tr>
         </tbody>
       </table>
@@ -61,9 +84,9 @@ export default function PrivacyPage() {
       <h2>3. Primatelji i izvršitelji obrade</h2>
       <p>Podatke dijelimo samo s pružateljima usluga koji nam pomažu u radu stranice, na temelju ugovora o obradi podataka:</p>
       <ul>
-        <li>[UPISATI: hosting, npr. Vercel Inc. — smještaj web stranice]</li>
-        <li>[UPISATI: slanje e-pošte, npr. Resend — dostava upita iz obrasca]</li>
-        <li>[UPISATI: ako se koristi — Upstash (ograničenje broja upita), Cloudflare Turnstile (zaštita od spama), alat za analitiku]</li>
+        <li>Cloudflare, Inc. — smještaj web stranice (Cloudflare Workers), baza podataka za analitiku, upite i newsletter (Cloudflare D1), statistika posjeta bez kolačića (Cloudflare Web Analytics) i zaštita pristupa internim stranicama; baza se nalazi u zapadnoj Europi (EU)</li>
+        <li>Resend — slanje e-pošte (upiti iz obrasca, potvrda prijave na newsletter) i popis primatelja newslettera</li>
+        <li>[UPISATI: ako se koristi — Upstash (ograničenje broja upita), Cloudflare Turnstile (zaštita od spama)]</li>
       </ul>
       <p>
         Ako se podaci prenose izvan Europskog gospodarskog prostora, prijenos se temelji na odluci o primjerenosti ili standardnim

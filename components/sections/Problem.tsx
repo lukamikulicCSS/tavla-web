@@ -12,7 +12,7 @@ const rows = [
 
 export function Problem() {
   return (
-    <section aria-labelledby="problem-naslov" className="surface-light bg-white py-24 text-ink sm:py-32">
+    <section data-section="problem" aria-labelledby="problem-naslov" className="surface-light bg-white py-24 text-ink sm:py-32">
       <div className="container-page">
         <SectionHeading
           id="problem-naslov"

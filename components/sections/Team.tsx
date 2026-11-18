@@ -14,7 +14,7 @@ function initials(name: string) {
 
 export function Team() {
   return (
-    <section id="o-nama" aria-labelledby="tim-naslov" className="bg-ink py-24 sm:py-32">
+    <section id="o-nama" data-section="tim" aria-labelledby="tim-naslov" className="bg-ink py-24 sm:py-32">
       <div className="container-page">
         <SectionHeading id="tim-naslov" title="Ljudi iza Tavle." lead="Tavlu razvijamo u Hrvatskoj, za ugostitelje koji žele da posluživanje teče bez zastoja." />
 

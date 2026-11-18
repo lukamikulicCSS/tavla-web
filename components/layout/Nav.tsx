@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { mainNav } from "@/content/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { ButtonLink } from "@/components/ui/Button";
+import { MegaMenu } from "@/components/nav/MegaMenu";
+import { MobileAiMenu } from "@/components/nav/MobileAiMenu";
 
 /** solid: uvijek staklena podloga (za stranice sa svijetlom pozadinom pri vrhu) */
 export function Nav({ solid = false }: { solid?: boolean }) {
@@ -34,7 +36,7 @@ export function Nav({ solid = false }: { solid?: boolean }) {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <header data-zone="nav" className="fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <a href="#sadrzaj" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-ink">
         Preskoči na sadržaj
       </a>
@@ -50,17 +52,20 @@ export function Nav({ solid = false }: { solid?: boolean }) {
           </Link>
 
           <ul className="hidden items-center gap-1 lg:flex">
-            {mainNav.slice(1).map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="rounded-full px-3.5 py-2 text-[0.875rem] text-white/75 transition-colors hover:text-white">
-                  {l.label}
-                </Link>
-              </li>
+            {mainNav.map((l, i) => (
+              <Fragment key={l.href}>
+                <li>
+                  <Link href={l.href} data-track={`nav-${l.href.replace(/^\/#/, "")}`} className="rounded-full px-3.5 py-2 text-[0.875rem] text-white/75 transition-colors hover:text-white">
+                    {l.label}
+                  </Link>
+                </li>
+                {i === 0 && <MegaMenu />}
+              </Fragment>
             ))}
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <ButtonLink href="/#kontakt" size="md" className="h-10 max-sm:hidden">
+            <ButtonLink href="/#kontakt" size="md" className="h-10 max-sm:hidden" data-track="nav-cta-demo">
               Zatraži demo
             </ButtonLink>
             <button
@@ -85,22 +90,29 @@ export function Nav({ solid = false }: { solid?: boolean }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.3 }}
-              className="glass mt-2 origin-top rounded-[1.75rem] p-3 lg:hidden"
+              className="glass mt-2 max-h-[calc(100dvh-6.5rem)] origin-top !bg-[rgb(20_20_23/0.96)] overflow-y-auto overscroll-contain rounded-[1.75rem] p-3 lg:hidden"
             >
               <ul>
                 {mainNav.map((l, i) => (
-                  <m.li key={l.href} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i + 0.05 }}>
-                    <Link
-                      href={l.href}
-                      onClick={() => setOpen(false)}
-                      className="flex min-h-12 items-center rounded-2xl px-4 text-xl font-medium tracking-[-0.02em] text-white hover:bg-white/[0.06]"
-                    >
-                      {l.label}
-                    </Link>
-                  </m.li>
+                  <Fragment key={l.href}>
+                    <m.li initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i + 0.05 }}>
+                      <Link
+                        href={l.href}
+                        onClick={() => setOpen(false)}
+                        className="flex min-h-12 items-center rounded-2xl px-4 text-xl font-medium tracking-[-0.02em] text-white hover:bg-white/[0.06]"
+                      >
+                        {l.label}
+                      </Link>
+                    </m.li>
+                    {i === 0 && (
+                      <m.li initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
+                        <MobileAiMenu onNavigate={() => setOpen(false)} />
+                      </m.li>
+                    )}
+                  </Fragment>
                 ))}
               </ul>
-              <ButtonLink href="/#kontakt" onClick={() => setOpen(false)} size="lg" className="mt-2 w-full">
+              <ButtonLink href="/#kontakt" onClick={() => setOpen(false)} size="lg" className="mt-2 w-full" data-track="nav-mobile-cta-demo">
                 Zatraži demo
               </ButtonLink>
             </m.div>

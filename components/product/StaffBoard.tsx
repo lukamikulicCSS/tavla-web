@@ -5,6 +5,7 @@ import { Bell, Check, ChefHat, Receipt } from "lucide-react";
 import { useEffect, useState } from "react";
 import { demoVenue } from "@/content/demo-data";
 import { itemById, minutesSince, useDemo, type OrderStatus } from "./demo-store";
+import { emit } from "@/lib/analytics/emit";
 
 const columns: { key: OrderStatus; title: string; action?: string }[] = [
   { key: "new", title: "Nove", action: "Prihvati" },
@@ -111,7 +112,10 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
                       {col.action && (
                         <button
                           tabIndex={tabIndex}
-                          onClick={() => demo.advance(o.id)}
+                          onClick={() => {
+                            if (o.status === "new") emit("demo_interaction", { section: "demo", label: "staff_accept" });
+                            demo.advance(o.id);
+                          }}
                           className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-white py-1.5 text-xs font-semibold text-ink transition-transform active:scale-[0.97]"
                         >
                           {col.key === "new" ? <ChefHat className="size-3.5" /> : <Check className="size-3.5" />}

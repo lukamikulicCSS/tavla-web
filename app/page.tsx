@@ -10,7 +10,8 @@ import { Benefits } from "@/components/sections/Benefits";
 import { Industries } from "@/components/sections/Industries";
 import { WhyTavla } from "@/components/sections/WhyTavla";
 import { Team } from "@/components/sections/Team";
-import { Testimonials } from "@/components/sections/Testimonials";
+import { PartnerStrip } from "@/components/sections/PartnerStrip";
+import { Partners } from "@/components/sections/Partners";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { HomeJsonLd } from "@/components/seo/JsonLd";
@@ -22,6 +23,7 @@ export default function HomePage() {
       <Nav />
       <main id="sadrzaj">
         <Hero />
+        <PartnerStrip />
         <AiSoon />
         <Problem />
         <HowItWorks />
@@ -31,7 +33,7 @@ export default function HomePage() {
         <Industries />
         <WhyTavla />
         <Team />
-        <Testimonials />
+        <Partners />
         <Faq />
         <Contact />
       </main>

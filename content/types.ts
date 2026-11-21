@@ -110,6 +110,8 @@ export type Partner = {
   logoMono: string;
   /** Omjer širina/visina loga, radi točnog prostora (bez pomicanja stranice) */
   ratio: number;
+  /** Boja sjaja u kartici, RGB bez zareza (npr. "219 176 52") */
+  glow: string;
   url?: string;
   text: string;
 };

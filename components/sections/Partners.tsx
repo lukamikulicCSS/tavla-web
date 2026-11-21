@@ -19,14 +19,15 @@ export function Partners({ locale }: { locale: Locale }) {
           </h2>
         </Reveal>
 
-        <ul className="mt-10 flex flex-wrap justify-center gap-4 sm:mt-12 sm:gap-5">
+        <ul className="mt-10 flex flex-wrap justify-center gap-3 sm:mt-12 sm:gap-5">
           {partners.map((p) => {
             const card = (
-              <div className="relative isolate grid aspect-square w-48 place-items-center overflow-hidden rounded-[1.75rem] bg-graphite ring-1 ring-inset ring-white/[0.07] transition-[box-shadow,transform] duration-500 ease-[var(--ease-apple)] group-hover:-translate-y-0.5 group-hover:ring-white/[0.14] sm:w-60">
-                {/* blagi zlatni sjaj u kartici */}
+              <div className="relative isolate grid aspect-square w-[10.25rem] place-items-center overflow-hidden rounded-[1.75rem] bg-graphite ring-1 ring-inset ring-white/[0.07] transition-[box-shadow,transform] duration-500 ease-[var(--ease-apple)] group-hover:-translate-y-0.5 group-hover:ring-white/[0.14] sm:w-60">
+                {/* blagi sjaj u boji partnera */}
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_40%,rgb(219_176_52/0.12),transparent)]"
+                  className="pointer-events-none absolute inset-0 -z-10"
+                  style={{ background: `radial-gradient(60% 60% at 50% 40%, rgb(${p.glow} / 0.12), transparent)` }}
                 />
                 <Image
                   src={p.logo}
@@ -34,7 +35,7 @@ export function Partners({ locale }: { locale: Locale }) {
                   width={240}
                   height={Math.round(240 / p.ratio)}
                   unoptimized
-                  className="h-auto w-24 sm:w-28"
+                  className="h-auto w-[4.5rem] sm:w-28"
                 />
                 <h3 className="sr-only">{p.name}</h3>
               </div>

@@ -16,6 +16,7 @@ import { GuestStats } from "@/components/sections/GuestStats";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { HomeJsonLd } from "@/components/seo/JsonLd";
+import { GlowStage } from "@/components/ui/GlowStage";
 
 /** Početna — ista duga stranica na oba jezika (app/(hr)/page.tsx i app/en/page.tsx). */
 export function HomePage({ locale }: { locale: Locale }) {
@@ -24,11 +25,14 @@ export function HomePage({ locale }: { locale: Locale }) {
       <HomeJsonLd locale={locale} />
       <Nav />
       <main id="sadrzaj">
-        <Hero />
-        <PartnerStrip locale={locale} />
-        <AiSoon locale={locale} />
-        <GuestStats locale={locale} />
-        <HowItWorks />
+        {/* Tamna pozornica do prve svijetle sekcije: sekcije moraju biti izravna djeca GlowStage */}
+        <GlowStage>
+          <Hero />
+          <PartnerStrip locale={locale} />
+          <AiSoon locale={locale} />
+          <GuestStats locale={locale} />
+          <HowItWorks />
+        </GlowStage>
         <Experiences locale={locale} />
         <ProductDemo />
         <Benefits locale={locale} />

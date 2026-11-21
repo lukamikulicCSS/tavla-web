@@ -13,6 +13,7 @@ import { WhyTavla } from "@/components/sections/WhyTavla";
 import { Team } from "@/components/sections/Team";
 import { PartnerStrip } from "@/components/sections/PartnerStrip";
 import { Partners } from "@/components/sections/Partners";
+import { GuestStats } from "@/components/sections/GuestStats";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { HomeJsonLd } from "@/components/seo/JsonLd";
@@ -36,6 +37,7 @@ export function HomePage({ locale }: { locale: Locale }) {
         <WhyTavla locale={locale} />
         <Team locale={locale} />
         <Partners locale={locale} />
+        <GuestStats locale={locale} />
         <Faq />
         <Contact locale={locale} />
       </main>

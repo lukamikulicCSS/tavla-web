@@ -4,16 +4,21 @@ import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useId, useRef, useState } from "react";
 import { useConsent } from "./consent";
+import { href } from "@/content/routes";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 
+/** Kategorije kolačića; tekstovi su u content/{hr,en}/ui.ts (cookies.categories). Kolačić pristanka je isti za oba jezika. */
 const categories = [
-  { key: "necessary", title: "Nužni", text: "Pamte vaš izbor o kolačićima i štite obrazac od zloupotrebe. Bez njih stranica ne radi ispravno.", locked: true },
-  { key: "analytics", title: "Analitički", text: "Statistika korištenja stranice: koje sekcije čitate i na što kliknete. Bez IP adrese, bez praćenja između posjeta, ne koristimo je za oglašavanje." },
-  { key: "marketing", title: "Marketinški", text: "Trenutno ih ne koristimo. Ako ih uvedemo, tražit ćemo vaš pristanak." },
+  { key: "necessary", locked: true },
+  { key: "analytics" },
+  { key: "marketing" },
 ] as const;
 
 export function CookieBanner() {
   const { consent, ready, panelOpen, openPanel, closePanel, save } = useConsent();
   const showBanner = ready && !consent && !panelOpen;
+  const locale = useLocale();
+  const t = useDict().ui.cookies;
 
   return (
     <>
@@ -21,7 +26,7 @@ export function CookieBanner() {
         {showBanner && (
           <m.div
             role="region"
-            aria-label="Obavijest o kolačićima"
+            aria-label={t.bannerAria}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 24 }}
@@ -30,18 +35,18 @@ export function CookieBanner() {
           >
             <div className="glass rounded-[1.5rem] p-5 text-white">
               <p className="text-sm leading-relaxed text-white/85">
-                Koristimo nužne kolačiće da bi stranica radila. Analitičke kolačiće koristimo samo uz vaš pristanak.{" "}
-                <Link href="/kolacici" className="text-white underline underline-offset-4">Saznajte više</Link>
+                {t.bannerText}{" "}
+                <Link href={href("cookies", locale)} className="text-white underline underline-offset-4">{t.learnMore}</Link>
               </p>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <button onClick={() => save({ analytics: false, marketing: false })} className="h-11 rounded-full bg-white/10 text-sm font-medium transition-colors hover:bg-white/15">
-                  Odbij neobavezne
+                  {t.reject}
                 </button>
                 <button onClick={() => save({ analytics: true, marketing: true })} className="h-11 rounded-full bg-white/10 text-sm font-medium transition-colors hover:bg-white/15">
-                  Prihvati sve
+                  {t.acceptAll}
                 </button>
                 <button onClick={openPanel} className="col-span-2 h-10 text-sm text-white/70 underline-offset-4 hover:text-white hover:underline">
-                  Prilagodi postavke
+                  {t.customize}
                 </button>
               </div>
             </div>
@@ -60,6 +65,7 @@ function PreferencesDialog({ onClose }: { onClose: () => void }) {
   const [marketing, setMarketing] = useState(consent?.marketing ?? false);
   const titleId = useId();
   const ref = useRef<HTMLDivElement>(null);
+  const t = useDict().ui.cookies;
 
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
@@ -102,8 +108,8 @@ function PreferencesDialog({ onClose }: { onClose: () => void }) {
         exit={{ y: 30, opacity: 0 }}
         className="relative m-3 w-[calc(100%-1.5rem)] max-w-lg rounded-[1.75rem] bg-graphite p-6 text-white shadow-2xl sm:p-8"
       >
-        <h2 id={titleId} className="text-xl font-semibold tracking-[-0.02em]">Postavke kolačića</h2>
-        <p className="mt-2 text-sm text-soft">Odaberite koje kolačiće dopuštate. Izbor možete promijeniti u bilo kojem trenutku putem poveznice u podnožju stranice.</p>
+        <h2 id={titleId} className="text-xl font-semibold tracking-[-0.02em]">{t.dialogTitle}</h2>
+        <p className="mt-2 text-sm text-soft">{t.dialogText}</p>
 
         <ul className="mt-6 divide-y divide-white/10">
           {categories.map((c) => {
@@ -113,8 +119,8 @@ function PreferencesDialog({ onClose }: { onClose: () => void }) {
             return (
               <li key={c.key} className="flex items-start justify-between gap-6 py-4">
                 <div>
-                  <label htmlFor={id} className="font-medium">{c.title}</label>
-                  <p className="mt-1 text-sm leading-relaxed text-soft">{c.text}</p>
+                  <label htmlFor={id} className="font-medium">{t.categories[c.key].title}</label>
+                  <p className="mt-1 text-sm leading-relaxed text-soft">{t.categories[c.key].text}</p>
                 </div>
                 <span className="relative mt-0.5 inline-flex">
                   <input
@@ -137,10 +143,10 @@ function PreferencesDialog({ onClose }: { onClose: () => void }) {
 
         <div className="mt-6 grid gap-2 sm:grid-cols-2">
           <button onClick={() => save({ analytics: false, marketing: false })} className="h-11 rounded-full bg-white/10 text-sm font-medium hover:bg-white/15">
-            Odbij neobavezne
+            {t.reject}
           </button>
           <button onClick={() => save(values)} className="h-11 rounded-full bg-white text-sm font-medium text-ink hover:bg-white/90">
-            Spremi odabir
+            {t.save}
           </button>
         </div>
       </m.div>

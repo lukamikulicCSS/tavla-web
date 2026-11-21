@@ -12,6 +12,8 @@ import { site } from "@/content/site";
 import { NEWSLETTER_CONSENT_VERSION } from "@/lib/newsletter-schema";
 import { getSecret } from "./request";
 import { confirmEmail } from "./newsletter-email";
+import { getDict } from "@/content";
+import { href, type Locale } from "@/content/routes";
 
 const TOKEN_TTL_MS = 48 * 3600_000;
 const RESEND_COOLDOWN_MS = 10 * 60_000;
@@ -30,9 +32,9 @@ const b64 = (s: string) => Buffer.from(s, "utf8").toString("base64url");
 const unb64 = (s: string) => Buffer.from(s, "base64url").toString("utf8");
 
 /** Trajna poveznica za odjavu (deterministička, ne treba je spremati). */
-export async function unsubscribeUrl(email: string) {
+export async function unsubscribeUrl(email: string, locale: Locale = "hr") {
   const key = await secret();
-  return `${site.url}/newsletter/odjava?e=${b64(email)}&t=${hmac(key, `unsub:${email}`)}`;
+  return `${site.url}${href("newsletterUnsubscribe", locale)}?e=${b64(email)}&t=${hmac(key, `unsub:${email}`)}`;
 }
 
 export async function verifyUnsubscribe(e: string, t: string): Promise<string | null> {
@@ -64,7 +66,7 @@ export type SubscribeResult = "ok" | "unavailable";
  * Upis. Uvijek vraća istu poruku korisniku ("ok"), bez obzira je li adresa već prijavljena,
  * da se ne otkriva tko je na popisu.
  */
-export async function subscribe(db: D1Database, email: string, source: string, interest?: string): Promise<SubscribeResult> {
+export async function subscribe(db: D1Database, email: string, source: string, interest?: string, locale: Locale = "hr"): Promise<SubscribeResult> {
   const key = await secret();
   const now = Date.now();
   const existing = await db
@@ -80,29 +82,38 @@ export async function subscribe(db: D1Database, email: string, source: string, i
 
   const token = randomBytes(32).toString("base64url");
   const tokenHash = hmac(key, `confirm:${token}`);
-  await db
-    .prepare(
-      `INSERT INTO newsletter_consents (email, status, source, interest, consent_version, created_at, token_hash, token_expires_at)
-       VALUES (?1, 'pending', ?2, ?3, ?4, ?5, ?6, ?7)
-       ON CONFLICT(email) DO UPDATE SET
-         status = 'pending', source = excluded.source, interest = COALESCE(excluded.interest, interest),
-         consent_version = excluded.consent_version, created_at = excluded.created_at,
-         token_hash = excluded.token_hash, token_expires_at = excluded.token_expires_at,
-         confirmed_at = NULL, unsubscribed_at = NULL`,
-    )
-    .bind(email, source, interest ?? null, NEWSLETTER_CONSENT_VERSION, now, tokenHash, now + TOKEN_TTL_MS)
-    .run();
+  const upsert = (withLocale: boolean) =>
+    db
+      .prepare(
+        `INSERT INTO newsletter_consents (email, status, source, interest, consent_version, created_at, token_hash, token_expires_at${withLocale ? ", locale" : ""})
+         VALUES (?1, 'pending', ?2, ?3, ?4, ?5, ?6, ?7${withLocale ? ", ?8" : ""})
+         ON CONFLICT(email) DO UPDATE SET
+           status = 'pending', source = excluded.source, interest = COALESCE(excluded.interest, interest),
+           consent_version = excluded.consent_version, created_at = excluded.created_at,
+           token_hash = excluded.token_hash, token_expires_at = excluded.token_expires_at,
+           confirmed_at = NULL, unsubscribed_at = NULL${withLocale ? ", locale = excluded.locale" : ""}`,
+      )
+      .bind(...[email, source, interest ?? null, NEWSLETTER_CONSENT_VERSION, now, tokenHash, now + TOKEN_TTL_MS, ...(withLocale ? [locale] : [])])
+      .run();
+  try {
+    await upsert(true);
+  } catch (err) {
+    // migracija 0003 (stupac locale) još nije primijenjena — upis bez jezika, kao prije
+    if (!(err instanceof Error && /locale/i.test(err.message))) throw err;
+    console.warn("[newsletter] stupac locale ne postoji — primijenite migrations/0003_newsletter_locale.sql");
+    await upsert(false);
+  }
 
   const from = (await getSecret("NEWSLETTER_FROM_EMAIL")) ?? "Tavla <novosti@tavlahr.com>";
-  const unsub = await unsubscribeUrl(email);
-  const confirmUrl = `${site.url}/newsletter/potvrda?token=${token}`;
-  const mail = confirmEmail(confirmUrl, unsub);
+  const unsub = await unsubscribeUrl(email, locale);
+  const confirmUrl = `${site.url}${href("newsletterConfirm", locale)}?token=${token}`;
+  const mail = confirmEmail(confirmUrl, unsub, locale);
   const res = await resend("/emails", {
     method: "POST",
     body: {
       from,
       to: [email],
-      subject: "Potvrdite prijavu na novosti iz Tavle",
+      subject: getDict(locale).messages.newsletter.email.subject,
       html: mail.html,
       text: mail.text,
       headers: { "List-Unsubscribe": `<${unsub}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },

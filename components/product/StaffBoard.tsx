@@ -4,20 +4,18 @@ import { AnimatePresence, m } from "framer-motion";
 import { Bell, Check, ChefHat, Receipt } from "lucide-react";
 import { useEffect, useState } from "react";
 import { demoVenue } from "@/content/demo-data";
-import { itemById, minutesSince, useDemo, type OrderStatus } from "./demo-store";
+import { minutesSince, useDemo, useDemoText, type OrderStatus } from "./demo-store";
 import { emit } from "@/lib/analytics/emit";
 
-const columns: { key: OrderStatus; title: string; action?: string }[] = [
-  { key: "new", title: "Nove", action: "Prihvati" },
-  { key: "preparing", title: "U pripremi", action: "Posluženo" },
-  { key: "served", title: "Posluženo" },
-];
+const columns: OrderStatus[] = ["new", "preparing", "served"];
 
 const dot: Record<OrderStatus, string> = { new: "bg-info", preparing: "bg-wait", served: "bg-ok" };
 
 /** Prikaz za osoblje: narudžbe po statusu i zahtjevi gostiju. */
 export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
   const demo = useDemo();
+  const dt = useDemoText();
+  const t = dt.t.staff;
   const now = useNow();
   const openReqs = demo.requests.filter((r) => !r.done);
   const tabIndex = interactive ? 0 : -1;
@@ -26,15 +24,15 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
     <div className="flex h-full flex-col p-4 text-sm @2xl:p-6" inert={!interactive || undefined}>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs text-soft">{demoVenue.name}</p>
-          <p className="text-lg font-semibold tracking-[-0.02em]">Narudžbe</p>
+          <p className="text-xs text-soft">{dt.venue}</p>
+          <p className="text-lg font-semibold tracking-[-0.02em]">{t.orders}</p>
         </div>
         <span className="flex items-center gap-2 rounded-full bg-white/[0.06] px-3 py-1.5 text-xs text-soft">
           <span className="relative flex size-2">
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-60 motion-reduce:hidden" />
             <span className="relative inline-flex size-2 rounded-full bg-ok" />
           </span>
-          Uživo
+          {t.live}
         </span>
       </div>
 
@@ -58,7 +56,7 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
                 <span className="flex items-center gap-2.5">
                   {r.kind === "bill" ? <Receipt className="size-4" /> : <Bell className="size-4" />}
                   <span>
-                    <b className="font-semibold">Stol {r.table}</b> {r.kind === "bill" ? "traži račun" : "zove konobara"}
+                    <b className="font-semibold">{dt.t.table} {r.table}</b> {r.kind === "bill" ? t.asksBill : t.callsWaiter}
                   </span>
                 </span>
                 <button
@@ -66,18 +64,19 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
                   onClick={() => demo.resolve(r.id)}
                   className={`rounded-full px-3 py-1 text-xs font-medium ${r.table === demoVenue.table ? "bg-ink text-white" : "bg-white/10"}`}
                 >
-                  Riješeno
+                  {t.resolved}
                 </button>
               </div>
             </m.div>
           ))}
         </AnimatePresence>
-        {openReqs.length === 0 && <p className="py-2.5 text-xs text-soft">Nema otvorenih zahtjeva.</p>}
+        {openReqs.length === 0 && <p className="py-2.5 text-xs text-soft">{t.noRequests}</p>}
       </div>
 
       {/* Stupci */}
       <div className="mt-2 grid flex-1 gap-3 @lg:grid-cols-3">
-        {columns.map((col) => {
+        {columns.map((key) => {
+          const col = { key, title: t.columns[key], action: key === "served" ? undefined : t.actions[key] };
           const list = demo.orders.filter((o) => o.status === col.key).slice(0, col.key === "served" ? 2 : 4);
           return (
             <section key={col.key} aria-label={col.title} className="flex min-w-0 flex-col rounded-2xl bg-white/[0.03] p-2.5">
@@ -99,13 +98,13 @@ export function StaffBoard({ interactive = true }: { interactive?: boolean }) {
                       className={`rounded-xl p-3 ${o.mine && o.status === "new" ? "bg-white/[0.12] ring-1 ring-white/30" : "bg-white/[0.06]"}`}
                     >
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="text-base font-semibold tracking-[-0.02em]">Stol {o.table}</span>
-                        <span className="tabular shrink-0 text-[0.6875rem] text-soft">{minutesSince(o.createdAt, now)}</span>
+                        <span className="text-base font-semibold tracking-[-0.02em]">{dt.t.table} {o.table}</span>
+                        <span className="tabular shrink-0 text-[0.6875rem] text-soft">{minutesSince(o.createdAt, now, t)}</span>
                       </div>
                       <ul className="mt-1.5 space-y-0.5 text-[0.8125rem] text-white/80">
                         {o.items.map((l) => (
                           <li key={l.id} className="truncate">
-                            <span className="tabular text-soft">{l.qty}×</span> {itemById(l.id).name}
+                            <span className="tabular text-soft">{l.qty}×</span> {dt.name(l.id)}
                           </li>
                         ))}
                       </ul>

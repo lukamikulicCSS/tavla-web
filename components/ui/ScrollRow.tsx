@@ -2,11 +2,13 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useDict } from "@/components/i18n/LocaleProvider";
 
 /** Vodoravni niz s gumbima za miš (desktop). Na dodir se lista prstom. */
 export function ScrollRow({ children, label, className = "" }: { children: ReactNode; label: string; className?: string }) {
   const ref = useRef<HTMLUListElement>(null);
   const [edge, setEdge] = useState({ start: true, end: false });
+  const t = useDict().ui.product;
 
   useEffect(() => {
     const el = ref.current;
@@ -30,10 +32,10 @@ export function ScrollRow({ children, label, className = "" }: { children: React
         {children}
       </ul>
       <div className="container-page mt-4 hidden justify-end gap-2 md:flex">
-        <button type="button" onClick={() => by(-1)} disabled={edge.start} aria-label="Prethodno" className={btn}>
+        <button type="button" onClick={() => by(-1)} disabled={edge.start} aria-label={t.scrollPrev} className={btn}>
           <ChevronLeft className="size-5" />
         </button>
-        <button type="button" onClick={() => by(1)} disabled={edge.end} aria-label="Sljedeće" className={btn}>
+        <button type="button" onClick={() => by(1)} disabled={edge.end} aria-label={t.scrollNext} className={btn}>
           <ChevronRight className="size-5" />
         </button>
       </div>

@@ -6,15 +6,20 @@ import { ChefHat, Check, Inbox } from "lucide-react";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { images } from "@/content/navigation";
 import { demoVenue } from "@/content/demo-data";
+import { anchors } from "@/content/routes";
 import { ButtonLink } from "@/components/ui/Button";
 import { PhoneFrame } from "@/components/product/PhoneFrame";
 import { GuestApp, type GuestView } from "@/components/product/GuestApp";
-import { DemoProvider, itemById, useDemo } from "@/components/product/demo-store";
+import { DemoProvider, useDemo, useDemoText } from "@/components/product/demo-store";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const locale = useLocale();
+  const t = useDict().home.hero;
+  const a = anchors[locale];
   return (
     <section
       ref={sectionRef}
@@ -25,7 +30,7 @@ export function Hero() {
     >
       {images.hero && (
         <>
-          <Image src={images.hero} alt={images.heroAlt} fill priority sizes="100vw" className="-z-20 object-cover opacity-40" />
+          <Image src={images.hero} alt={images.heroAlt[locale]} fill priority sizes="100vw" className="-z-20 object-cover opacity-40" />
           <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/60 via-ink/70 to-ink" />
         </>
       )}
@@ -39,10 +44,10 @@ export function Hero() {
             id="hero-naslov"
             className="hero-rise text-[clamp(2.5rem,1.45rem+3.3vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.04em]"
           >
-            Nova razina ugostiteljskog iskustva.
+            {t.title}
           </h1>
           <p className="hero-rise mt-5 max-w-[30rem] text-[1.0625rem] leading-relaxed text-soft sm:text-lg [animation-delay:120ms]">
-            Digitalni meni i naručivanje za kafiće, restorane i hotele. Gost naručuje s mobitela, osoblje narudžbu vidi odmah.
+            {t.lead}
           </p>
           <m.div
             className="mt-9 flex flex-col gap-3 sm:flex-row"
@@ -50,8 +55,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease }}
           >
-            <ButtonLink href="#kontakt" size="lg" data-track="hero-cta-demo">Zatraži demonstraciju</ButtonLink>
-            <ButtonLink href="#kako-funkcionira" size="lg" variant="secondary" data-track="hero-kako-funkcionira">Otkrij kako funkcionira</ButtonLink>
+            <ButtonLink href={`#${a.contact}`} size="lg" data-track="hero-cta-demo">{t.cta}</ButtonLink>
+            <ButtonLink href={`#${a.how}`} size="lg" variant="secondary" data-track="hero-kako-funkcionira">{t.secondary}</ButtonLink>
           </m.div>
         </div>
 
@@ -173,6 +178,8 @@ function PointerGlow({ targetRef }: { targetRef: RefObject<HTMLElement | null> }
  */
 function HeroStage() {
   const demo = useDemo();
+  const dt = useDemoText();
+  const h = dt.t.hero;
   const reduce = useReducedMotion();
   const [view, setView] = useState<GuestView>("menu");
   const [flash, setFlash] = useState<string>();
@@ -222,7 +229,7 @@ function HeroStage() {
     >
       <div aria-hidden className="stage-light absolute -inset-[20%] -z-10" />
 
-      <PhoneFrame className="mx-auto w-[min(72vw,19.5rem)]" label="Tavla na mobitelu gosta: odabir pića i slanje narudžbe">
+      <PhoneFrame className="mx-auto w-[min(72vw,19.5rem)]" label={h.phoneLabel}>
         <GuestApp view={view} onViewChange={setView} flashId={flash} interactive={false} />
       </PhoneFrame>
 
@@ -240,12 +247,12 @@ function HeroStage() {
             >
               <p className="flex items-center gap-2 text-xs text-soft">
                 {order.status === "new" ? <Inbox className="size-3.5" /> : order.status === "preparing" ? <ChefHat className="size-3.5" /> : <Check className="size-3.5" />}
-                {order.status === "new" ? "Nova narudžba" : order.status === "preparing" ? "U pripremi" : "Posluženo"}
+                {order.status === "new" ? h.newOrder : order.status === "preparing" ? h.preparing : h.served}
               </p>
-              <p className="mt-1 text-lg font-semibold tracking-[-0.02em]">Stol {demoVenue.table}</p>
+              <p className="mt-1 text-lg font-semibold tracking-[-0.02em]">{dt.t.table} {demoVenue.table}</p>
               <ul className="mt-1.5 space-y-0.5 text-[0.8125rem] text-white/75">
                 {order.items.map((l) => (
-                  <li key={l.id} className="truncate"><span className="tabular text-soft">{l.qty}×</span> {itemById(l.id).name}</li>
+                  <li key={l.id} className="truncate"><span className="tabular text-soft">{l.qty}×</span> {dt.name(l.id)}</li>
                 ))}
               </ul>
             </m.div>
@@ -257,8 +264,8 @@ function HeroStage() {
               exit={{ opacity: 0 }}
               className="glass rounded-[1.25rem] p-4 text-white"
             >
-              <p className="text-xs text-soft">Šank</p>
-              <p className="mt-1 text-sm text-white/80">Čeka narudžbe sa stolova</p>
+              <p className="text-xs text-soft">{h.bar}</p>
+              <p className="mt-1 text-sm text-white/80">{h.waiting}</p>
             </m.div>
           )}
         </AnimatePresence>

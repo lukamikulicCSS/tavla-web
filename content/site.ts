@@ -1,18 +1,11 @@
 /**
- * Osnovni podaci o stranici i tvrtki.
+ * Osnovni podaci o stranici i tvrtki (isti za oba jezika).
+ * Tekstovi po jeziku (naslov, opis, ključne riječi) su u content/hr/ui.ts i content/en/ui.ts.
  * Sve označeno s [UPISATI] mora se popuniti prije produkcije.
  */
 export const site = {
   name: "Tavla",
   url: (process.env.NEXT_PUBLIC_SITE_URL || "https://tavlahr.com").replace(/\/$/, ""),
-  locale: "hr_HR",
-  defaultLocale: "hr" as const,
-  /** Jezici za koje postoji sadržaj. Dodaj "en" kad bude content/en.ts */
-  locales: ["hr"] as const,
-
-  title: "Tavla — digitalni meni i QR naručivanje za ugostiteljstvo",
-  description:
-    "Tavla je digitalni meni i sustav za naručivanje za kafiće, restorane, barove i hotele. Gosti naručuju sa svog mobitela, osoblje dobiva narudžbe odmah, a vlasnik ima pregled poslovanja.",
 
   contact: {
     email: "info@tavlahr.com" as string, // prikazuje se u podnožju; stiže na Gmail preko Cloudflare Email Routinga (catch-all)
@@ -39,4 +32,4 @@ export const site = {
   },
 } as const;
 
-export type Locale = (typeof site.locales)[number];
+export type { Locale } from "./routes";

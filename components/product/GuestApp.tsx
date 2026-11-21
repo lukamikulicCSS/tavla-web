@@ -7,8 +7,8 @@
 import { AnimatePresence, m } from "framer-motion";
 import { Bell, Check, ChevronLeft, Minus, Plus, Receipt, RotateCcw, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { demoCategories, demoMenu, demoVenue, formatEur } from "@/content/demo-data";
-import { itemById, lineCount, lineTotal, useDemo, type OrderStatus } from "./demo-store";
+import { demoCategoryIds, demoMenu, demoVenue } from "@/content/demo-data";
+import { itemById, lineCount, lineTotal, useDemo, useDemoText, type OrderStatus } from "./demo-store";
 import { StatusBar } from "./PhoneFrame";
 import { emit } from "@/lib/analytics/emit";
 import type { DemoAction } from "@/lib/analytics/events";
@@ -18,11 +18,7 @@ const demoEvent = (label: DemoAction) => emit("demo_interaction", { section: "de
 
 export type GuestView = "menu" | "cart" | "status";
 
-const steps: { key: OrderStatus; label: string }[] = [
-  { key: "new", label: "Primljeno" },
-  { key: "preparing", label: "U pripremi" },
-  { key: "served", label: "Posluženo" },
-];
+const steps: OrderStatus[] = ["new", "preparing", "served"];
 
 export function GuestApp({
   view: controlledView,
@@ -37,10 +33,12 @@ export function GuestApp({
   interactive?: boolean;
 }) {
   const demo = useDemo();
+  const dt = useDemoText();
+  const g = dt.t.guest;
   const [innerView, setInnerView] = useState<GuestView>("menu");
   const view = controlledView ?? innerView;
   const setView = (v: GuestView) => (onViewChange ? onViewChange(v) : setInnerView(v));
-  const [cat, setCat] = useState(demoCategories[0].id);
+  const [cat, setCat] = useState<(typeof demoCategoryIds)[number]>(demoCategoryIds[0]);
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,33 +68,33 @@ export function GuestApp({
       <div className="flex items-center justify-between px-[5.5cqw] pb-[3cqw] pt-[2cqw]">
         {view === "status" ? (
           <button tabIndex={tabIndex} onClick={() => setView("menu")} className="-ml-[1.5cqw] flex items-center gap-[0.5cqw] font-medium">
-            <ChevronLeft className="size-[5cqw]" /> Meni
+            <ChevronLeft className="size-[5cqw]" /> {g.menu}
           </button>
         ) : (
           <div>
-            <p className="text-[3.2cqw] text-slate">{demoVenue.name}</p>
-            <p className="text-[5.6cqw] font-semibold tracking-[-0.02em]">Stol {demoVenue.table}</p>
+            <p className="text-[3.2cqw] text-slate">{dt.venue}</p>
+            <p className="text-[5.6cqw] font-semibold tracking-[-0.02em]">{dt.t.table} {demoVenue.table}</p>
           </div>
         )}
-        <span className="rounded-full bg-mist px-[2.6cqw] py-[1cqw] text-[3.1cqw] font-medium text-slate">HR</span>
+        <span className="rounded-full bg-mist px-[2.6cqw] py-[1cqw] text-[3.1cqw] font-medium text-slate">{g.langBadge}</span>
       </div>
 
       {view !== "status" ? (
         <>
           {/* Kategorije */}
-          <div className="no-scrollbar flex gap-[2cqw] overflow-x-auto px-[5.5cqw] pb-[3cqw]" role="tablist" aria-label="Kategorije">
-            {demoCategories.map((c) => (
+          <div className="no-scrollbar flex gap-[2cqw] overflow-x-auto px-[5.5cqw] pb-[3cqw]" role="tablist" aria-label={g.categoriesAria}>
+            {demoCategoryIds.map((c) => (
               <button
-                key={c.id}
+                key={c}
                 role="tab"
-                aria-selected={cat === c.id}
+                aria-selected={cat === c}
                 tabIndex={tabIndex}
-                onClick={() => setCat(c.id)}
+                onClick={() => setCat(c)}
                 className={`shrink-0 rounded-full px-[3.6cqw] py-[1.8cqw] text-[3.5cqw] font-medium transition-colors ${
-                  cat === c.id ? "bg-ink text-white" : "bg-mist text-ink/70"
+                  cat === c ? "bg-ink text-white" : "bg-mist text-ink/70"
                 }`}
               >
-                {c.name}
+                {dt.category(c)}
               </button>
             ))}
           </div>
@@ -113,15 +111,15 @@ export function GuestApp({
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold tracking-[-0.01em]">
-                      {it.name}
+                      {dt.name(it.id)}
                       {it.popular && (
                         <span className="ml-[1.5cqw] inline-flex items-center rounded-full bg-ink/[0.06] px-[1.6cqw] py-[0.3cqw] align-middle text-[2.6cqw] font-medium text-slate">
-                          Popularno
+                          {g.popular}
                         </span>
                       )}
                     </p>
-                    <p className="truncate text-[3.2cqw] text-slate">{it.desc}</p>
-                    <p className="tabular mt-[0.5cqw] text-[3.5cqw] font-medium">{formatEur(it.price)}</p>
+                    <p className="truncate text-[3.2cqw] text-slate">{dt.desc(it.id)}</p>
+                    <p className="tabular mt-[0.5cqw] text-[3.5cqw] font-medium">{dt.eur(it.price)}</p>
                   </div>
                   <button
                     tabIndex={tabIndex}
@@ -129,7 +127,7 @@ export function GuestApp({
                       demoEvent("guest_add");
                       demo.add(it.id);
                     }}
-                    aria-label={`Dodaj ${it.name}`}
+                    aria-label={g.add(dt.name(it.id))}
                     className={`relative grid size-[9cqw] shrink-0 place-items-center rounded-full transition-[transform,background-color] duration-200 active:scale-90 ${
                       inCart ? "bg-ink text-white" : "bg-mist text-ink"
                     } ${flashing ? "scale-90 bg-ink text-white" : ""}`}
@@ -156,10 +154,10 @@ export function GuestApp({
                   onClick={() => setView("cart")}
                   className="flex w-full items-center justify-between rounded-full bg-ink py-[3.6cqw] pl-[5cqw] pr-[3.6cqw] text-white shadow-[0_10px_30px_-10px_rgb(0_0_0/0.6)]"
                 >
-                  <span className="font-medium">Pregled narudžbe</span>
+                  <span className="font-medium">{g.reviewOrder}</span>
                   <span className="tabular flex items-center gap-[2cqw]">
                     <span className="rounded-full bg-white/15 px-[2.2cqw] py-[0.6cqw] text-[3.2cqw]">{count}</span>
-                    {formatEur(total)}
+                    {dt.eur(total)}
                   </span>
                 </button>
               </m.div>
@@ -181,7 +179,7 @@ export function GuestApp({
                 <m.div
                   key="sheet"
                   role="dialog"
-                  aria-label="Košarica"
+                  aria-label={g.cartAria}
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "100%" }}
@@ -189,19 +187,19 @@ export function GuestApp({
                   className="absolute inset-x-0 bottom-0 z-40 rounded-t-[7cqw] bg-white px-[5.5cqw] pb-[7cqw] pt-[3cqw] shadow-[0_-20px_40px_-20px_rgb(0_0_0/0.3)]"
                 >
                   <span aria-hidden className="mx-auto mb-[4cqw] block h-[1.2cqw] w-[11cqw] rounded-full bg-ink/15" />
-                  <p className="text-[5cqw] font-semibold tracking-[-0.02em]">Vaša narudžba</p>
+                  <p className="text-[5cqw] font-semibold tracking-[-0.02em]">{g.yourOrder}</p>
                   <ul className="mt-[3cqw] space-y-[2.4cqw]">
                     {demo.cart.map((l) => {
-                      const it = itemById(l.id);
+                      const name = dt.name(l.id);
                       return (
                         <li key={l.id} className="flex items-center justify-between gap-[2cqw]">
-                          <span className="min-w-0 truncate">{it.name}</span>
+                          <span className="min-w-0 truncate">{name}</span>
                           <span className="flex shrink-0 items-center gap-[2cqw]">
-                            <button tabIndex={tabIndex} aria-label={`Ukloni jedan ${it.name}`} onClick={() => demo.dec(l.id)} className="grid size-[7cqw] place-items-center rounded-full bg-mist">
+                            <button tabIndex={tabIndex} aria-label={g.removeOne(name)} onClick={() => demo.dec(l.id)} className="grid size-[7cqw] place-items-center rounded-full bg-mist">
                               <Minus className="size-[3.4cqw]" />
                             </button>
                             <span className="tabular w-[4cqw] text-center font-medium">{l.qty}</span>
-                            <button tabIndex={tabIndex} aria-label={`Dodaj još ${it.name}`} onClick={() => {
+                            <button tabIndex={tabIndex} aria-label={g.addMore(name)} onClick={() => {
                               demoEvent("guest_add");
                               demo.add(l.id);
                             }} className="grid size-[7cqw] place-items-center rounded-full bg-mist">
@@ -216,7 +214,7 @@ export function GuestApp({
                   {suggestions.length > 0 && (
                     <div className="mt-[5cqw]">
                       <p className="flex items-center gap-[1.4cqw] text-[3.2cqw] font-medium text-slate">
-                        <Sparkles className="size-[3.4cqw]" /> Uz ovo se često naručuje
+                        <Sparkles className="size-[3.4cqw]" /> {g.pairs}
                       </p>
                       <div className="mt-[2cqw] flex gap-[2cqw]">
                         {suggestions.map((s) => (
@@ -230,8 +228,8 @@ export function GuestApp({
                             className="flex flex-1 items-center justify-between gap-[1cqw] rounded-[3.5cqw] bg-mist px-[3cqw] py-[2.4cqw] text-left text-[3.3cqw]"
                           >
                             <span className="min-w-0">
-                              <span className="block truncate font-medium">{s.name}</span>
-                              <span className="tabular text-slate">{formatEur(s.price)}</span>
+                              <span className="block truncate font-medium">{dt.name(s.id)}</span>
+                              <span className="tabular text-slate">{dt.eur(s.price)}</span>
                             </span>
                             <Plus className="size-[3.6cqw] shrink-0" />
                           </button>
@@ -250,8 +248,8 @@ export function GuestApp({
                     }}
                     className="tabular mt-[5cqw] flex w-full items-center justify-between rounded-full bg-ink px-[5cqw] py-[3.8cqw] font-medium text-white disabled:opacity-40"
                   >
-                    <span>Pošalji narudžbu</span>
-                    <span>{formatEur(total)}</span>
+                    <span>{g.send}</span>
+                    <span>{dt.eur(total)}</span>
                   </button>
                 </m.div>
               </>
@@ -271,12 +269,12 @@ export function GuestApp({
           onWaiter={() => {
             demoEvent("guest_waiter");
             demo.request("waiter");
-            setToast("Konobar je obaviješten");
+            setToast(g.waiterToast);
           }}
           onBill={() => {
             demoEvent("guest_bill");
             demo.request("bill");
-            setToast("Račun je zatražen");
+            setToast(g.billToast);
           }}
         />
       )}
@@ -315,11 +313,13 @@ function StatusView({
   onWaiter: () => void;
   onBill: () => void;
 }) {
-  const idx = steps.findIndex((s) => s.key === status);
-  const headline = status === "new" ? "Narudžba je primljena" : status === "preparing" ? "Pripremamo vašu narudžbu" : "Uživajte!";
+  const dt = useDemoText();
+  const g = dt.t.guest;
+  const idx = steps.indexOf(status);
+  const headline = g.headline[status];
   return (
     <div className="flex flex-1 flex-col px-[5.5cqw] pb-[6cqw]">
-      <p className="text-[3.2cqw] text-slate">Narudžba {orderId}</p>
+      <p className="text-[3.2cqw] text-slate">{g.order} {orderId}</p>
       <AnimatePresence mode="wait">
         <m.p
           key={status}
@@ -334,9 +334,9 @@ function StatusView({
       </AnimatePresence>
 
       {/* Napredak */}
-      <ol className="mt-[6cqw] grid grid-cols-3 gap-[2cqw]" aria-label="Status narudžbe">
+      <ol className="mt-[6cqw] grid grid-cols-3 gap-[2cqw]" aria-label={g.statusAria}>
         {steps.map((s, i) => (
-          <li key={s.key} className="text-[3cqw]">
+          <li key={s} className="text-[3cqw]">
             <span className="block h-[1.2cqw] overflow-hidden rounded-full bg-ink/10">
               <m.span
                 className="block h-full rounded-full bg-ink"
@@ -345,7 +345,7 @@ function StatusView({
                 transition={{ duration: 0.6 }}
               />
             </span>
-            <span className={`mt-[1.5cqw] block ${i <= idx ? "font-medium text-ink" : "text-slate"}`}>{s.label}</span>
+            <span className={`mt-[1.5cqw] block ${i <= idx ? "font-medium text-ink" : "text-slate"}`}>{g.steps[s]}</span>
           </li>
         ))}
       </ol>
@@ -354,23 +354,23 @@ function StatusView({
         {lines.map((l) => (
           <li key={l.id} className="flex justify-between">
             <span>
-              <span className="tabular text-slate">{l.qty}×</span> {itemById(l.id).name}
+              <span className="tabular text-slate">{l.qty}×</span> {dt.name(l.id)}
             </span>
-            <span className="tabular">{formatEur(itemById(l.id).price * l.qty)}</span>
+            <span className="tabular">{dt.eur(itemById(l.id).price * l.qty)}</span>
           </li>
         ))}
       </ul>
 
       <div className="mt-auto grid gap-[2cqw]">
         <button tabIndex={tabIndex} onClick={onRepeat} className="flex items-center justify-center gap-[2cqw] rounded-full bg-ink py-[3.6cqw] font-medium text-white">
-          <RotateCcw className="size-[4cqw]" /> Ponovi turu
+          <RotateCcw className="size-[4cqw]" /> {g.repeat}
         </button>
         <div className="grid grid-cols-2 gap-[2cqw]">
           <button tabIndex={tabIndex} onClick={onWaiter} className="flex items-center justify-center gap-[1.6cqw] rounded-full bg-mist py-[3.4cqw] font-medium">
-            <Bell className="size-[3.8cqw]" /> Konobar
+            <Bell className="size-[3.8cqw]" /> {g.waiter}
           </button>
           <button tabIndex={tabIndex} onClick={onBill} className="flex items-center justify-center gap-[1.6cqw] rounded-full bg-mist py-[3.4cqw] font-medium">
-            <Receipt className="size-[3.8cqw]" /> Račun
+            <Receipt className="size-[3.8cqw]" /> {g.bill}
           </button>
         </div>
       </div>

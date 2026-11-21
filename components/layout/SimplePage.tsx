@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
+import type { Locale } from "@/content/routes";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 
 /** Tamna stranica s jednim središnjim blokom (potvrde, odjava). */
-export function SimplePage({ children }: { children: ReactNode }) {
+export function SimplePage({ locale, children }: { locale: Locale; children: ReactNode }) {
   return (
     <>
       <Nav solid />
@@ -11,7 +12,7 @@ export function SimplePage({ children }: { children: ReactNode }) {
         <div aria-hidden className="stage-light absolute inset-0 -z-10" />
         <div className="container-page">{children}</div>
       </main>
-      <Footer />
+      <Footer locale={locale} />
     </>
   );
 }

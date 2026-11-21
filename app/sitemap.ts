@@ -1,20 +1,23 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/content/site";
-import { pillars } from "@/content/ai";
+import { locales, routes, type RouteKey } from "@/content/routes";
+
+/** Obje jezične verzije svake indeksirane rute, s hreflang alternativama (iz content/routes.ts). */
+const abs = (path: string) => `${site.url}${path}`;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  return [
-    { url: `${site.url}/`, lastModified: now, changeFrequency: "monthly", priority: 1 },
-    { url: `${site.url}/tavla-ai`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    ...pillars.map((p) => ({
-      url: `${site.url}/tavla-ai/${p.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    })),
-    { url: `${site.url}/privatnost`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${site.url}/kolacici`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${site.url}/uvjeti`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-  ];
+  return (Object.keys(routes) as RouteKey[])
+    .filter((k) => routes[k].index)
+    .flatMap((k) => {
+      const r = routes[k] as (typeof routes)[RouteKey] & { priority?: number; changeFrequency?: "monthly" | "yearly" };
+      const languages = { hr: abs(r.hr), en: abs(r.en), "x-default": abs(r.hr) };
+      return locales.map((l) => ({
+        url: abs(r[l]),
+        lastModified: now,
+        changeFrequency: r.changeFrequency,
+        priority: r.priority,
+        alternates: { languages },
+      }));
+    });
 }

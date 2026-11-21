@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { pillars } from "@/content/ai";
+import { href, pillarRoute } from "@/content/routes";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 import { emit } from "@/lib/analytics/emit";
 import { StatusPill } from "@/components/ui/StatusBadge";
 import { AiPromoCard } from "./AiPromoCard";
@@ -25,7 +26,9 @@ export function MegaMenu() {
   const btn = useRef<HTMLButtonElement>(null);
   const timer = useRef<number | undefined>(undefined);
   const pathname = usePathname();
-  const active = pathname.startsWith("/tavla-ai");
+  const locale = useLocale();
+  const pillars = useDict().ai.pillars;
+  const active = pathname.startsWith(href("ai", locale));
 
   const set = useCallback((v: boolean) => {
     window.clearTimeout(timer.current);
@@ -123,7 +126,7 @@ export function MegaMenu() {
               {pillars.map((p) => (
                 <div key={p.slug} data-col className="rounded-[1.5rem] p-3">
                   <Link
-                    href={`/tavla-ai/${p.slug}`}
+                    href={href(pillarRoute(p.slug), locale)}
                     onClick={() => set(false)}
                     data-track={`nav-ai-${p.slug}`}
                     className="block rounded-xl px-2 py-1.5 text-[0.8125rem] font-medium text-soft transition-colors hover:text-white focus-visible:outline-[#2f6bff]"
@@ -134,7 +137,7 @@ export function MegaMenu() {
                     {p.features.map((f) => (
                       <li key={f.id}>
                         <Link
-                          href={`/tavla-ai/${p.slug}#${f.id}`}
+                          href={href(pillarRoute(p.slug), locale, f.anchor)}
                           onClick={() => set(false)}
                           data-track={`nav-ai-${f.id}`}
                           className="group block rounded-xl px-2 py-2 transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-[#2f6bff]"

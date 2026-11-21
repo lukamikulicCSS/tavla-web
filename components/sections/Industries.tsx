@@ -4,8 +4,9 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
-import { industries, type Industry } from "@/content/industries";
+import type { Industry } from "@/content/types";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useDict } from "@/components/i18n/LocaleProvider";
 
 /**
  * Pomična traka s fotografijama (zdesna nalijevo).
@@ -18,6 +19,9 @@ export function Industries() {
   const [touchPaused, setTouchPaused] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
   const resume = useRef<number | undefined>(undefined);
+  const d = useDict();
+  const t = d.home.industries;
+  const industries = d.industries;
 
   const holdTouch = () => {
     window.clearTimeout(resume.current);
@@ -33,8 +37,8 @@ export function Industries() {
       <div className="container-page">
         <SectionHeading
           id="industrije-naslov"
-          title="Gdje god gost sjedi i naručuje."
-          lead="Od jutarnje kave na terasi do separea u klubu, Tavla radi isto: narudžba sa stola stiže osoblju odmah."
+          title={t.title}
+          lead={t.lead}
         />
       </div>
 
@@ -63,7 +67,7 @@ export function Industries() {
           <div className="tavla-track flex w-max will-change-transform">
             {/* Dva ista niza jedan iza drugog → beskonačna petlja bez trzaja */}
             {[0, 1].map((copy) => (
-              <ul key={copy} className="flex shrink-0" aria-hidden={copy === 1 || undefined} aria-label={copy === 0 ? "Vrste objekata" : undefined}>
+              <ul key={copy} className="flex shrink-0" aria-hidden={copy === 1 || undefined} aria-label={copy === 0 ? t.listAria : undefined}>
                 {industries.map((ind) => (
                   <li key={ind.id} className="mr-4 shrink-0 sm:mr-5">
                     <Card ind={ind} hidden={copy === 1} />
@@ -84,7 +88,7 @@ export function Industries() {
             className="inline-flex h-10 items-center gap-2 rounded-full bg-white/[0.06] px-4 text-sm text-soft transition-colors hover:bg-white/10 hover:text-white"
           >
             {userPaused ? <Play className="size-3.5" aria-hidden /> : <Pause className="size-3.5" aria-hidden />}
-            {userPaused ? "Pokreni" : "Zaustavi"}
+            {userPaused ? t.play : t.pause}
           </button>
         </div>
       )}

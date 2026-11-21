@@ -11,29 +11,33 @@ import { StaffBoard } from "@/components/product/StaffBoard";
 import { OwnerDashboard } from "@/components/product/OwnerDashboard";
 import { DemoProvider, useDemo } from "@/components/product/demo-store";
 import { emit } from "@/lib/analytics/emit";
+import { anchors } from "@/content/routes";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 
 type Tab = "guest" | "staff" | "owner";
 
-const tabs: { key: Tab; label: string; icon: typeof Smartphone; hint: string }[] = [
-  { key: "guest", label: "Gost", icon: Smartphone, hint: "Dodajte piće u košaricu i pošaljite narudžbu. Nakon slanja možete ponoviti turu, pozvati konobara ili zatražiti račun." },
-  { key: "staff", label: "Osoblje", icon: ConciergeBell, hint: "Ovdje stižu narudžbe i zahtjevi sa stolova. Prihvatite narudžbu pa je označite posluženom." },
-  { key: "owner", label: "Vlasnik", icon: BarChart3, hint: "Pregled prometa, najprodavanijih artikala i aktivnih stolova. Vaše demo narudžbe već su uračunate." },
+const tabs: { key: Tab; icon: typeof Smartphone }[] = [
+  { key: "guest", icon: Smartphone },
+  { key: "staff", icon: ConciergeBell },
+  { key: "owner", icon: BarChart3 },
 ];
 
 export function ProductDemo() {
+  const locale = useLocale();
+  const t = useDict().home.demo;
   return (
-    <section id="demo" data-section="demo" aria-labelledby="demo-naslov" className="bg-ink py-24 sm:py-32">
+    <section id={anchors[locale].demo} data-section="demo" aria-labelledby="demo-naslov" className="bg-ink py-24 sm:py-32">
       <div className="container-page">
         <SectionHeading
           id="demo-naslov"
           align="center"
-          title="Isprobajte Tavlu."
-          lead="Naručite kao gost, primite narudžbu kao osoblje i pogledajte brojke kao vlasnik. Sve je jedan povezani demo."
+          title={t.title}
+          lead={t.lead}
         />
         <DemoProvider>
           <DemoTabs />
         </DemoProvider>
-        <p className="mt-8 text-center text-xs text-soft">Demo radi samo u vašem pregledniku, s izmišljenim podacima. Ništa se ne šalje stvarnom objektu.</p>
+        <p className="mt-8 text-center text-xs text-soft">{t.note}</p>
       </div>
     </section>
   );
@@ -43,35 +47,35 @@ function DemoTabs() {
   const [tab, setTab] = useState<Tab>("guest");
   const [guestView, setGuestView] = useState<GuestView>("menu");
   const demo = useDemo();
+  const t = useDict().home.demo;
   const newCount = demo.orders.filter((o) => o.status === "new").length + demo.requests.filter((r) => !r.done).length;
-  const current = tabs.find((t) => t.key === tab)!;
+  const current = t.tabs[tab];
 
   return (
     <div className="mt-12">
       <div className="flex flex-col items-center gap-4">
-        <div role="tablist" aria-label="Odaberite perspektivu" className="glass inline-flex rounded-full p-1">
-          {tabs.map((t) => {
-            const on = tab === t.key;
-            const Icon = t.icon;
+        <div role="tablist" aria-label={t.tabsAria} className="glass inline-flex rounded-full p-1">
+          {tabs.map(({ key, icon: Icon }) => {
+            const on = tab === key;
             return (
               <button
-                key={t.key}
+                key={key}
                 role="tab"
-                id={`tab-${t.key}`}
+                id={`tab-${key}`}
                 aria-selected={on}
-                aria-controls={`panel-${t.key}`}
+                aria-controls={`panel-${key}`}
                 onClick={() => {
-                  setTab(t.key);
-                  if (t.key === "owner") emit("demo_interaction", { section: "demo", label: "owner_open" });
+                  setTab(key);
+                  if (key === "owner") emit("demo_interaction", { section: "demo", label: "owner_open" });
                 }}
-                data-track={`demo-tab-${t.key}`}
+                data-track={`demo-tab-${key}`}
                 className={`relative flex h-11 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors sm:px-5 ${on ? "text-ink" : "text-white/75 hover:text-white"}`}
               >
                 {on && <m.span layoutId="demo-tab" className="absolute inset-0 -z-10 rounded-full bg-white" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
                 <Icon className="size-4" aria-hidden />
-                {t.label}
-                {t.key === "staff" && newCount > 0 && (
-                  <span className={`tabular grid min-w-5 place-items-center rounded-full px-1 text-[0.6875rem] ${on ? "bg-ink text-white" : "bg-white text-ink"}`} aria-label={`${newCount} novo`}>
+                {t.tabs[key].label}
+                {key === "staff" && newCount > 0 && (
+                  <span className={`tabular grid min-w-5 place-items-center rounded-full px-1 text-[0.6875rem] ${on ? "bg-ink text-white" : "bg-white text-ink"}`} aria-label={t.newCount(newCount)}>
                     {newCount}
                   </span>
                 )}
@@ -117,7 +121,7 @@ function DemoTabs() {
 
       <div className="mt-8 flex justify-center">
         <button onClick={() => { demo.reset(); setGuestView("menu"); }} className="flex items-center gap-2 rounded-full px-4 py-2 text-sm text-soft transition-colors hover:text-white">
-          <RotateCcw className="size-3.5" aria-hidden /> Vrati demo na početak
+          <RotateCcw className="size-3.5" aria-hidden /> {t.reset}
         </button>
       </div>
     </div>

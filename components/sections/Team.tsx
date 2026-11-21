@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { team } from "@/content/team";
+import { getDict } from "@/content";
+import { anchors, type Locale } from "@/content/routes";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { LogoMark } from "@/components/ui/Logo";
@@ -12,11 +13,14 @@ function initials(name: string) {
     .slice(0, 2);
 }
 
-export function Team() {
+export function Team({ locale }: { locale: Locale }) {
+  const d = getDict(locale);
+  const t = d.home.team;
+  const team = d.team;
   return (
-    <section id="o-nama" data-section="tim" aria-labelledby="tim-naslov" className="bg-ink py-24 sm:py-32">
+    <section id={anchors[locale].about} data-section="tim" aria-labelledby="tim-naslov" className="bg-ink py-24 sm:py-32">
       <div className="container-page">
-        <SectionHeading id="tim-naslov" title="Ljudi iza Tavle." lead="Tavlu razvijamo u Hrvatskoj, za ugostitelje koji žele da posluživanje teče bez zastoja." />
+        <SectionHeading id="tim-naslov" title={t.title} lead={t.lead} />
 
         <ul className="mt-16 grid gap-6 md:grid-cols-2">
           {team.map((p, i) => (
@@ -43,7 +47,7 @@ export function Team() {
                       rel="noopener noreferrer"
                       className="mt-5 inline-flex h-10 items-center rounded-full bg-white/[0.06] px-4 text-sm transition-colors hover:bg-white/10"
                     >
-                      LinkedIn profil
+                      {t.linkedin}
                     </a>
                   )}
                 </div>

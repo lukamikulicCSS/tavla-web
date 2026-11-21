@@ -1,26 +1,22 @@
 import { Clock, Eye, LayoutList, MessageSquareOff, Smile, TrendingUp, Zap } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
+import { getDict } from "@/content";
+import type { Locale } from "@/content/routes";
 
 /**
- * Kvalitativne koristi — namjerno BEZ brojki.
- * Statistike dodati tek kad postoje provjereni podaci iz stvarnih objekata.
+ * Kvalitativne koristi — namjerno BEZ brojki (tekst: content/{hr,en}/home.ts → benefits).
+ * Ikone redom odgovaraju stavkama.
  */
-const benefits = [
-  { icon: Smile, title: "Bolje iskustvo gosta", text: "Gost ne traži pogled konobara. Meni, narudžba i račun su mu na dohvat ruke." },
-  { icon: Zap, title: "Brže naručivanje", text: "Narudžba ide izravno sa stola na šank, bez koraka u kojem se zapisuje i prenosi." },
-  { icon: MessageSquareOff, title: "Manje prekidanja osoblja", text: "Pitanja tipa „što imate od piva” odgovara meni, a osoblje se bavi posluživanjem." },
-  { icon: Clock, title: "Učinkovitija usluga", text: "Kad osoblje manje hoda po narudžbe, ostaje mu više vremena za goste." },
-  { icon: TrendingUp, title: "Prilike za dodatnu prodaju", text: "Prijedlozi uz narudžbu i ponavljanje ture potiču drugu rundu bez nametanja." },
-  { icon: Eye, title: "Jasan pregled poslovanja", text: "Što se prodaje, kada je najveća gužva i koji su stolovi aktivni, vidite u stvarnom vremenu." },
-  { icon: LayoutList, title: "Jednostavnije upravljanje narudžbama", text: "Svaka narudžba ima stol, status i vrijeme. Ništa se ne izgubi između stola i šanka." },
-];
+const icons = [Smile, Zap, MessageSquareOff, Clock, TrendingUp, Eye, LayoutList];
 
-export function Benefits() {
+export function Benefits({ locale }: { locale: Locale }) {
+  const t = getDict(locale).home.benefits;
+  const benefits = t.items.map((b, i) => ({ ...b, icon: icons[i] ?? Smile }));
   return (
     <section data-section="koristi" aria-labelledby="koristi-naslov" className="surface-light bg-mist py-24 text-ink sm:py-32">
       <div className="container-page">
-        <SectionHeading id="koristi-naslov" tone="light" title="Napravljeno da ugostiteljstvo radi bolje." />
+        <SectionHeading id="koristi-naslov" tone="light" title={t.title} />
         <ul className="mt-16 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map((b, i) => (
             <Reveal as="li" key={b.title} delay={(i % 3) * 0.05} className={i === 0 ? "sm:col-span-2 lg:col-span-1" : ""}>

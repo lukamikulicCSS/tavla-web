@@ -5,19 +5,18 @@ import { useEffect, useRef, useState } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PhoneFrame, StatusBar } from "@/components/product/PhoneFrame";
 import { GuestApp, type GuestView } from "@/components/product/GuestApp";
-import { DemoProvider, useDemo } from "@/components/product/demo-store";
-
-const steps = [
-  { title: "Skeniraj", text: "Gost kamerom mobitela skenira kod na svom stolu. Meni se otvara u pregledniku, već povezan s tim stolom." },
-  { title: "Naruči", text: "Gost pregledava meni, bira pića i šalje narudžbu sa svog mobitela, kad je on spreman." },
-  { title: "Uživaj", text: "Osoblje odmah dobiva narudžbu i priprema je, a gost na mobitelu prati njezin status." },
-];
+import { DemoProvider, useDemo, useDemoText } from "@/components/product/demo-store";
+import { anchors } from "@/content/routes";
+import { demoVenue } from "@/content/demo-data";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 
 export function HowItWorks() {
+  const locale = useLocale();
+  const t = useDict().home.how;
   return (
-    <section id="kako-funkcionira" data-section="kako-funkcionira" aria-labelledby="kako-naslov" className="bg-ink py-24 sm:py-32">
+    <section id={anchors[locale].how} data-section="kako-funkcionira" aria-labelledby="kako-naslov" className="bg-ink py-24 sm:py-32">
       <div className="container-page">
-        <SectionHeading id="kako-naslov" title="Tri koraka od stola do narudžbe." lead="Bez aplikacije za preuzimanje, bez registracije, bez čekanja konobara." />
+        <SectionHeading id="kako-naslov" title={t.title} lead={t.lead} />
         <DemoProvider autoAdvance={false}>
           <Stepper />
         </DemoProvider>
@@ -33,12 +32,14 @@ function Stepper() {
   const inView = useInView(ref, { amount: 0.4 });
   const reduce = useReducedMotion();
   const demo = useDemo();
+  const t = useDict().home.how;
+  const steps = t.steps;
 
   useEffect(() => {
     if (!auto || !inView || reduce) return;
     const t = window.setTimeout(() => setActive((a) => (a + 1) % steps.length), 4200);
     return () => clearTimeout(t);
-  }, [active, auto, inView, reduce]);
+  }, [active, auto, inView, reduce, steps.length]);
 
   // Pripremi stanje mobitela za svaki korak
   useEffect(() => {
@@ -62,7 +63,7 @@ function Stepper() {
 
   return (
     <div ref={ref} className="mt-16 grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-24">
-      <ol className="space-y-2" aria-label="Koraci">
+      <ol className="space-y-2" aria-label={t.stepsAria}>
         {steps.map((s, i) => {
           const on = i === active;
           return (
@@ -113,7 +114,7 @@ function Stepper() {
 
       <div className="relative mx-auto">
         <div aria-hidden className="stage-light absolute -inset-[25%] -z-10" />
-        <PhoneFrame className="w-[min(70vw,17.5rem)]" label={`Mobitel gosta, korak ${active + 1}: ${steps[active].title}`}>
+        <PhoneFrame className="w-[min(70vw,17.5rem)]" label={t.phoneLabel(active + 1, steps[active].title)}>
           <AnimatePresence mode="wait">
             <m.div
               key={active}
@@ -134,6 +135,7 @@ function Stepper() {
 
 /** Kamera s okvirom za skeniranje — originalna ilustracija. */
 function ScanScreen() {
+  const s = useDemoText().t.scan;
   return (
     <div className="relative flex h-full flex-col bg-[#101012] text-white">
       <StatusBar dark />
@@ -161,8 +163,8 @@ function ScanScreen() {
         </div>
       </div>
       <div className="glass mx-[5cqw] mb-[8cqw] rounded-[5cqw] p-[4cqw] text-[3.6cqw]">
-        <p className="font-semibold">tavla.hr</p>
-        <p className="text-white/70">Otvori meni za stol 7</p>
+        <p className="font-semibold">{s.domain}</p>
+        <p className="text-white/70">{s.open(demoVenue.table)}</p>
       </div>
     </div>
   );

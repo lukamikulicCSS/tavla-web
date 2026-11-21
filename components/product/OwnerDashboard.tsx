@@ -1,8 +1,8 @@
 "use client";
 
 import { m } from "framer-motion";
-import { demoHourly, demoTopItems, formatEur } from "@/content/demo-data";
-import { itemById, lineCount, lineTotal, useDemo } from "./demo-store";
+import { demoHourly, demoTopItems } from "@/content/demo-data";
+import { lineCount, lineTotal, useDemo, useDemoText } from "./demo-store";
 
 // Demo osnovica za "danas" — izmišljene brojke, uvijek označene kao demo.
 const BASE_REVENUE = demoHourly.reduce((s, h) => s + h.v, 0);
@@ -11,6 +11,8 @@ const TABLES = 12;
 
 export function OwnerDashboard() {
   const demo = useDemo();
+  const dt = useDemoText();
+  const t = dt.t.owner;
   const mine = demo.orders.filter((o) => o.mine);
   const revenue = BASE_REVENUE + mine.reduce((s, o) => s + lineTotal(o.items), 0);
   const orders = BASE_ORDERS + mine.length;
@@ -24,20 +26,20 @@ export function OwnerDashboard() {
   const topMax = top[0]?.qty ?? 1;
 
   const kpis = [
-    { label: "Promet danas", value: formatEur(revenue) },
-    { label: "Narudžbe", value: String(orders) },
-    { label: "Prosječna narudžba", value: formatEur(avg) },
-    { label: "Aktivni stolovi", value: `${activeTables.size} / ${TABLES}` },
+    { label: t.revenueToday, value: dt.eur(revenue) },
+    { label: t.orders, value: String(orders) },
+    { label: t.avgOrder, value: dt.eur(avg) },
+    { label: t.activeTables, value: `${activeTables.size} / ${TABLES}` },
   ];
 
   return (
     <div className="p-4 text-sm @2xl:p-7">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-xs text-slate">Pregled</p>
-          <p className="text-xl font-semibold tracking-[-0.025em]">Danas</p>
+          <p className="text-xs text-slate">{t.overview}</p>
+          <p className="text-xl font-semibold tracking-[-0.025em]">{t.today}</p>
         </div>
-        <span className="rounded-full bg-mist px-3 py-1 text-xs text-slate">Demo podaci</span>
+        <span className="rounded-full bg-mist px-3 py-1 text-xs text-slate">{t.demoData}</span>
       </div>
 
       <dl className="mt-5 grid grid-cols-2 gap-2.5 @xl:grid-cols-4">
@@ -53,10 +55,10 @@ export function OwnerDashboard() {
         {/* Promet po satu */}
         <figure className="rounded-2xl border border-line-light p-4">
           <figcaption className="flex items-baseline justify-between">
-            <span className="font-medium">Promet po satu</span>
+            <span className="font-medium">{t.revenueByHour}</span>
             <span className="text-xs text-slate">EUR</span>
           </figcaption>
-          <div className="mt-4 flex h-36 items-end gap-1.5" role="img" aria-label="Stupčasti graf prometa po satu, najviše oko 18 sati">
+          <div className="mt-4 flex h-36 items-end gap-1.5" role="img" aria-label={t.chartAria}>
             {demoHourly.map((h, i) => (
               <div key={h.h} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
                 <m.span
@@ -74,19 +76,19 @@ export function OwnerDashboard() {
 
         {/* Najprodavanije */}
         <div className="rounded-2xl border border-line-light p-4">
-          <p className="font-medium">Najprodavanije</p>
+          <p className="font-medium">{t.topSellers}</p>
           <ol className="mt-3 space-y-3">
-            {top.map((t) => (
-              <li key={t.id}>
+            {top.map((item) => (
+              <li key={item.id}>
                 <div className="flex justify-between text-[0.8125rem]">
-                  <span className="truncate">{itemById(t.id).name}</span>
-                  <span className="tabular text-slate">{t.qty}</span>
+                  <span className="truncate">{dt.name(item.id)}</span>
+                  <span className="tabular text-slate">{item.qty}</span>
                 </div>
                 <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-ink/[0.06]">
                   <m.span
                     className="block h-full rounded-full bg-ink"
                     initial={{ width: 0 }}
-                    whileInView={{ width: `${(t.qty / topMax) * 100}%` }}
+                    whileInView={{ width: `${(item.qty / topMax) * 100}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
                   />
@@ -100,30 +102,30 @@ export function OwnerDashboard() {
       {/* Stolovi */}
       <div className="mt-3 rounded-2xl border border-line-light p-4">
         <div className="flex items-baseline justify-between">
-          <p className="font-medium">Stolovi</p>
+          <p className="font-medium">{t.tables}</p>
           <p className="flex gap-3 text-xs text-slate">
-            <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-ink" />aktivan</span>
-            <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-ink/15" />slobodan</span>
+            <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-ink" />{t.active}</span>
+            <span className="flex items-center gap-1.5"><i className="size-2 rounded-full bg-ink/15" />{t.free}</span>
           </p>
         </div>
         <ul className="mt-3 grid grid-cols-6 gap-1.5 @md:grid-cols-12">
-          {Array.from({ length: TABLES }, (_, i) => i + 1).map((t) => {
-            const active = activeTables.has(t);
+          {Array.from({ length: TABLES }, (_, i) => i + 1).map((n) => {
+            const active = activeTables.has(n);
             return (
               <li
-                key={t}
+                key={n}
                 className={`tabular grid aspect-square place-items-center rounded-lg text-xs font-medium transition-colors duration-500 ${
                   active ? "bg-ink text-white" : "bg-mist text-slate"
                 }`}
-                aria-label={`Stol ${t}, ${active ? "aktivan" : "slobodan"}`}
+                aria-label={t.tableAria(n, active)}
               >
-                {t}
+                {n}
               </li>
             );
           })}
         </ul>
       </div>
-      <p className="mt-3 text-xs text-slate">Narudžbe koje pošaljete kao gost u demou dodaju se ovim brojkama. {lineCount(demo.cart) > 0 && "U košarici imate neposlane artikle."}</p>
+      <p className="mt-3 text-xs text-slate">{t.footnote} {lineCount(demo.cart) > 0 && t.unsent}</p>
     </div>
   );
 }

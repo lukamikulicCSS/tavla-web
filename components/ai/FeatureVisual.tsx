@@ -1,4 +1,7 @@
-import type { AiVisual, FeatureStatus } from "@/content/ai";
+"use client";
+
+import type { AiVisual, FeatureStatus } from "@/content/types";
+import { useDict } from "@/components/i18n/LocaleProvider";
 import { PhoneFrame, StatusBar } from "@/components/product/PhoneFrame";
 import { BrowserFrame, TabletFrame } from "@/components/product/DeviceFrames";
 import { BrandingScreen, LanguageScreen, LoyaltyScreen, MenuScreen, TipsScreen } from "./visuals/PhoneScreens";
@@ -12,17 +15,6 @@ const phone: Partial<Record<AiVisual, () => React.ReactNode>> = {
   branding: BrandingScreen,
 };
 
-const LABELS: Record<AiVisual, string> = {
-  menu: "Primjer AI preporuke u digitalnom meniju",
-  tips: "Primjer prijedloga napojnice pri plaćanju",
-  staff: "Primjer panela za osoblje s narudžbama po stolovima",
-  loyalty: "Primjer Tavla+ programa vjernosti",
-  insights: "Primjer tjednog AI sažetka za vlasnika",
-  branding: "Primjer menija u stilu objekta",
-  analytics: "Primjer pregleda prodaje po satu",
-  pos: "Primjer narudžbe koja ide u kasu objekta",
-  language: "Primjer menija na hrvatskom i engleskom",
-};
 
 /**
  * Živi prikaz sučelja u okviru uređaja. HTML/CSS, bez slika.
@@ -30,11 +22,13 @@ const LABELS: Record<AiVisual, string> = {
  * data-nosnippet: demo artikli i cijene ne smiju završiti u isječcima tražilica.
  */
 export function FeatureVisual({ visual, status, className = "" }: { visual: AiVisual; status: FeatureStatus; className?: string }) {
+  const t = useDict().ui.aiVisuals;
+  const LABELS = t.labels;
   const Phone = phone[visual];
   const example = status !== "live";
   const badge = example ? (
     <span className="absolute -top-3 left-1/2 z-40 -translate-x-1/2 rounded-full bg-graphite px-3 py-1 text-[0.6875rem] font-medium text-white/75 ring-1 ring-white/10">
-      Primjer
+      {t.example}
     </span>
   ) : null;
 

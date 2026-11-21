@@ -5,8 +5,8 @@
  * ne šalje se nikamo i nije povezano s produkcijskim podacima.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
-import { demoMenu, demoRequests, demoSeedOrders, demoVenue, type MenuItem } from "@/content/demo-data";
-
+import { demoMenu, demoRequests, demoSeedOrders, demoVenue, formatEur, type DemoItemId, type MenuItem } from "@/content/demo-data";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 
 export type OrderStatus = "new" | "preparing" | "served";
 export type Line = { id: string; qty: number };
@@ -28,6 +28,20 @@ type Action =
 
 const menuById = new Map<string, MenuItem>(demoMenu.map((m) => [m.id, m]));
 export const itemById = (id: string) => menuById.get(id)!;
+
+/** Nazivi artikala, kategorija i formatiranje cijena na jeziku stranice. */
+export function useDemoText() {
+  const locale = useLocale();
+  const d = useDict();
+  return {
+    venue: d.demo.venue,
+    category: (id: MenuItem["cat"]) => d.demo.categories[id],
+    name: (id: string) => d.demo.items[id as DemoItemId].name,
+    desc: (id: string) => d.demo.items[id as DemoItemId].desc,
+    eur: (n: number) => formatEur(n, locale),
+    t: d.ui.product,
+  };
+}
 export const lineTotal = (lines: Line[]) => lines.reduce((s, l) => s + itemById(l.id).price * l.qty, 0);
 export const lineCount = (lines: Line[]) => lines.reduce((s, l) => s + l.qty, 0);
 
@@ -146,7 +160,7 @@ export function useDemo() {
   return c;
 }
 
-export function minutesSince(ts: number, now: number) {
+export function minutesSince(ts: number, now: number, t: { justNow: string; minAgo: (m: number) => string }) {
   const m = Math.max(0, Math.round((now - ts) / 60_000));
-  return m === 0 ? "upravo" : `prije ${m} min`;
+  return m === 0 ? t.justNow : t.minAgo(m);
 }

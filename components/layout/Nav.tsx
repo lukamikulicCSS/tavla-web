@@ -4,8 +4,10 @@ import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { mainNav } from "@/content/navigation";
+import { anchors, href } from "@/content/routes";
 import { Logo } from "@/components/ui/Logo";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { ButtonLink } from "@/components/ui/Button";
 import { MegaMenu } from "@/components/nav/MegaMenu";
 import { MobileAiMenu } from "@/components/nav/MobileAiMenu";
@@ -15,6 +17,10 @@ export function Nav({ solid = false }: { solid?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuBtn = useRef<HTMLButtonElement>(null);
+  const locale = useLocale();
+  const t = useDict().ui.nav;
+  const mainNav = t.main.map((l) => ({ label: l.label, href: href("home", locale, l.anchor), anchor: l.anchor }));
+  const contactHref = href("home", locale, "contact");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -38,16 +44,16 @@ export function Nav({ solid = false }: { solid?: boolean }) {
   return (
     <header data-zone="nav" className="fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <a href="#sadrzaj" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-ink">
-        Preskoči na sadržaj
+        {t.skip}
       </a>
       <div className="container-page">
         <nav
-          aria-label="Glavna navigacija"
+          aria-label={t.label}
           className={`flex h-14 items-center justify-between rounded-full pl-5 pr-2 transition-[background-color,box-shadow,backdrop-filter] duration-500 ease-[var(--ease-apple)] ${
             solid ? "glass !bg-[rgb(11_11_13/0.86)]" : scrolled || open ? "glass" : "bg-transparent"
           }`}
         >
-          <Link href="/#top" className="text-white" aria-label="Tavla — početna">
+          <Link href={href("home", locale, "top")} className="text-white" aria-label={t.homeAria}>
             <Logo className="h-[1.375rem] w-auto" />
           </Link>
 
@@ -55,7 +61,7 @@ export function Nav({ solid = false }: { solid?: boolean }) {
             {mainNav.map((l, i) => (
               <Fragment key={l.href}>
                 <li>
-                  <Link href={l.href} data-track={`nav-${l.href.replace(/^\/#/, "")}`} className="rounded-full px-3.5 py-2 text-[0.875rem] text-white/75 transition-colors hover:text-white">
+                  <Link href={l.href} data-track={`nav-${anchors.hr[l.anchor]}`} className="rounded-full px-3.5 py-2 text-[0.875rem] text-white/75 transition-colors hover:text-white">
                     {l.label}
                   </Link>
                 </li>
@@ -65,16 +71,17 @@ export function Nav({ solid = false }: { solid?: boolean }) {
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <ButtonLink href="/#kontakt" size="md" className="h-10 max-sm:hidden" data-track="nav-cta-demo">
-              Zatraži demo
+            <ButtonLink href={contactHref} size="md" className="h-10 max-sm:hidden" data-track="nav-cta-demo">
+              {t.cta}
             </ButtonLink>
+            <LanguageSwitcher className="ml-1.5 mr-1 hidden lg:flex" />
             <button
               ref={menuBtn}
               type="button"
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobilni-meni"
-              aria-label={open ? "Zatvori izbornik" : "Otvori izbornik"}
+              aria-label={open ? t.closeMenu : t.openMenu}
               className="grid size-11 place-items-center rounded-full text-white transition-colors hover:bg-white/10 lg:hidden"
             >
               {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -112,9 +119,12 @@ export function Nav({ solid = false }: { solid?: boolean }) {
                   </Fragment>
                 ))}
               </ul>
-              <ButtonLink href="/#kontakt" onClick={() => setOpen(false)} size="lg" className="mt-2 w-full" data-track="nav-mobile-cta-demo">
-                Zatraži demo
+              <ButtonLink href={contactHref} onClick={() => setOpen(false)} size="lg" className="mt-2 w-full" data-track="nav-mobile-cta-demo">
+                {t.cta}
               </ButtonLink>
+              <div className="mt-3 flex justify-center border-t border-white/10 pt-3">
+                <LanguageSwitcher onNavigate={() => setOpen(false)} />
+              </div>
             </m.div>
           )}
         </AnimatePresence>

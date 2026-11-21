@@ -2,7 +2,7 @@
 
 import { m, type Variants } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
-import type { AiFeature } from "@/content/ai";
+import type { AiFeature } from "@/content/types";
 import { StatusPill } from "@/components/ui/StatusBadge";
 import { FeatureVisual } from "./FeatureVisual";
 
@@ -15,7 +15,7 @@ const visualIn: Variants = { hidden: { opacity: 0, y: 24, scale: 0.98 }, show: {
 export function FeatureBlock({ feature: f, reverse }: { feature: AiFeature; reverse: boolean }) {
   return (
     <m.section
-      id={f.id}
+      id={f.anchor}
       data-section={`ai-${f.id}`}
       aria-labelledby={`${f.id}-naslov`}
       variants={container}

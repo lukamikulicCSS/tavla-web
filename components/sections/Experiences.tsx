@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { guestFeatures, ownerFeatures, staffFeatures, type Feature } from "@/content/features";
+import { getDict } from "@/content";
+import { anchors, type Locale } from "@/content/routes";
+import type { Feature } from "@/content/types";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { SoonBadge } from "@/components/ui/StatusBadge";
@@ -10,17 +12,19 @@ import { StaffBoard } from "@/components/product/StaffBoard";
 import { OwnerDashboard } from "@/components/product/OwnerDashboard";
 import { DemoProvider } from "@/components/product/demo-store";
 
-export function Experiences() {
+export function Experiences({ locale }: { locale: Locale }) {
+  const d = getDict(locale);
+  const t = d.home.experiences;
   return (
-    <div id="rjesenja" data-section="iskustva">
+    <div id={anchors[locale].solutions} data-section="iskustva">
       {/* Uvod */}
       <section aria-labelledby="iskustva-naslov" className="surface-light bg-white pt-24 text-ink sm:pt-32">
         <div className="container-page">
           <SectionHeading
             id="iskustva-naslov"
             tone="light"
-            title="Tri iskustva. Jedna platforma."
-            lead="Gost, osoblje i vlasnik vide istu narudžbu, svatko iz svoje perspektive i u istom trenutku."
+            title={t.title}
+            lead={t.lead}
           />
         </div>
       </section>
@@ -28,13 +32,14 @@ export function Experiences() {
       <Block
         tone="light"
         id="gosti"
-        who="Za goste"
-        title="Sve što treba, na dlanu."
-        text="Meni se otvara skeniranjem koda na stolu. Gost bira, naručuje i prati narudžbu bez čekanja da ga netko primijeti."
-        features={guestFeatures}
+        who={t.guests.who}
+        title={t.guests.title}
+        text={t.guests.text}
+        features={d.features.guest}
+        locale={locale}
         visual={
           <DemoProvider autoAdvance={false}>
-            <PhoneFrame className="mx-auto w-[min(72vw,18.5rem)]" label="Sučelje za goste: digitalni meni s kategorijama i cijenama">
+            <PhoneFrame className="mx-auto w-[min(72vw,18.5rem)]" label={t.guests.visualLabel}>
               <GuestApp interactive={false} />
             </PhoneFrame>
           </DemoProvider>
@@ -44,10 +49,11 @@ export function Experiences() {
       <Block
         tone="dark"
         id="osoblje"
-        who="Za osoblje"
-        title="Posluživanje bez nepotrebnog trčanja."
-        text="Narudžbe i zahtjevi gostiju stižu na tablet za šankom, s brojem stola. Osoblje vidi što je novo, što se priprema i što je posluženo."
-        features={staffFeatures}
+        who={t.staff.who}
+        title={t.staff.title}
+        text={t.staff.text}
+        features={d.features.staff}
+        locale={locale}
         reverse
         visual={
           <DemoProvider autoAdvance={false}>
@@ -61,10 +67,11 @@ export function Experiences() {
       <Block
         tone="light"
         id="vlasnici"
-        who="Za vlasnike"
-        title="Cijeli objekt u jednom pregledu."
-        text="Meni uređujete sami, a promet, najprodavaniji artikli i aktivnost stolova vidljivi su bez prepisivanja iz bilježnice."
-        features={ownerFeatures}
+        who={t.owners.who}
+        title={t.owners.title}
+        text={t.owners.text}
+        features={d.features.owner}
+        locale={locale}
         visual={
           <DemoProvider autoAdvance={false}>
             <BrowserFrame>
@@ -86,6 +93,7 @@ function Block({
   features,
   visual,
   reverse,
+  locale,
 }: {
   tone: "dark" | "light";
   id: string;
@@ -95,6 +103,7 @@ function Block({
   features: Feature[];
   visual: ReactNode;
   reverse?: boolean;
+  locale: Locale;
 }) {
   const dark = tone === "dark";
   return (

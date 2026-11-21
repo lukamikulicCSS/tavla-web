@@ -3,17 +3,19 @@
 import { AnimatePresence, m } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useId, useState } from "react";
-import { faq } from "@/content/faq";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useDict } from "@/components/i18n/LocaleProvider";
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   const base = useId();
+  const d = useDict();
+  const faq = d.faq;
 
   return (
     <section data-section="faq" aria-labelledby="faq-naslov" className="surface-light bg-white pb-24 pt-8 text-ink sm:pb-32">
       <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-20">
-        <SectionHeading id="faq-naslov" tone="light" title="Česta pitanja." lead="Ne vidite svoje pitanje? Pošaljite ga kroz obrazac i odgovorit ćemo izravno." />
+        <SectionHeading id="faq-naslov" tone="light" title={d.home.faq.title} lead={d.home.faq.lead} />
         <ul className="border-b border-line-light">
           {faq.map((item, i) => {
             const isOpen = open === i;

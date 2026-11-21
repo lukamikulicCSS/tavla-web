@@ -6,6 +6,8 @@ import { AnimatePresence, m } from "framer-motion";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { contactSchema, venueTypes } from "@/lib/contact-schema";
+import { href } from "@/content/routes";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 import { emit } from "@/lib/analytics/emit";
 import { readSessionSource } from "@/lib/analytics/attribution";
 import { Button } from "@/components/ui/Button";
@@ -31,6 +33,9 @@ export function ContactForm() {
   const tsId = useRef<string | undefined>(undefined);
   const tsToken = useRef<string | undefined>(undefined);
   const started = useRef(false);
+  const locale = useLocale();
+  const d = useDict();
+  const t = d.ui.contactForm;
 
   useEffect(() => {
     startedAt.current = Date.now();
@@ -41,7 +46,7 @@ export function ContactForm() {
     tsId.current = window.turnstile.render(tsRef.current, {
       sitekey: TURNSTILE_KEY,
       theme: "dark",
-      language: "hr",
+      language: locale,
       callback: (t: string) => (tsToken.current = t),
       "expired-callback": () => (tsToken.current = undefined),
     });
@@ -64,9 +69,10 @@ export function ContactForm() {
       website: String(fd.get("website") ?? ""),
       startedAt: startedAt.current || Date.now(),
       turnstileToken: tsToken.current,
+      locale,
     };
 
-    const check = contactSchema.safeParse(payload);
+    const check = contactSchema(locale).safeParse(payload);
     if (!check.success) {
       const fe: Errors = {};
       for (const i of check.error.issues) {
@@ -75,7 +81,7 @@ export function ContactForm() {
       }
       setErrors(fe);
       setStatus("error");
-      setMessage("Provjerite označena polja.");
+      setMessage(t.checkFields);
       emit("form_error", { label: "kontakt", target: Object.keys(fe).join(",").slice(0, 80) });
       const first = Object.keys(fe)[0];
       if (first) formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
@@ -102,11 +108,11 @@ export function ContactForm() {
       setErrors(data.fieldErrors ?? {});
       emit("form_error", { label: "kontakt", target: Object.keys(data.fieldErrors ?? {}).join(",").slice(0, 80) || `http-${res.status}` });
       setStatus("error");
-      setMessage(data.error ?? "Slanje nije uspjelo. Pokušajte ponovno.");
+      setMessage(data.error ?? t.failed);
       if (tsId.current) window.turnstile?.reset(tsId.current);
     } catch {
       setStatus("error");
-      setMessage("Nema veze s poslužiteljem. Provjerite internet i pošaljite ponovno.");
+      setMessage(t.offline);
     }
   }
 
@@ -121,10 +127,10 @@ export function ContactForm() {
         {status === "sent" ? (
           <m.div key="ok" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="py-10 text-center" role="status">
             <CheckCircle2 className="mx-auto size-10" strokeWidth={1.4} aria-hidden />
-            <h3 className="mt-5 text-h3 font-semibold">Upit je poslan.</h3>
-            <p className="mx-auto mt-3 max-w-sm text-soft">Javit ćemo vam se na upisanu e-mail adresu, najčešće unutar jednog radnog dana.</p>
+            <h3 className="mt-5 text-h3 font-semibold">{t.sentTitle}</h3>
+            <p className="mx-auto mt-3 max-w-sm text-soft">{t.sentText}</p>
             <button onClick={() => setStatus("idle")} className="mt-8 text-sm text-soft underline-offset-4 hover:text-white hover:underline">
-              Pošalji novi upit
+              {t.sendAnother}
             </button>
           </m.div>
         ) : (
@@ -145,34 +151,34 @@ export function ContactForm() {
             data-form="kontakt"
           >
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Ime i prezime" name="name" error={errors.name}>
+              <Field label={t.name} name="name" error={errors.name}>
                 <input id="name" name="name" autoComplete="name" required maxLength={100} className={field} aria-invalid={!!errors.name} aria-describedby={errors.name ? "name-err" : undefined} />
               </Field>
-              <Field label="Naziv objekta" name="business" error={errors.business}>
+              <Field label={t.business} name="business" error={errors.business}>
                 <input id="business" name="business" autoComplete="organization" required maxLength={120} className={field} aria-invalid={!!errors.business} aria-describedby={errors.business ? "business-err" : undefined} />
               </Field>
-              <Field label="E-mail" name="email" error={errors.email}>
+              <Field label={t.email} name="email" error={errors.email}>
                 <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required maxLength={160} className={field} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-err" : undefined} />
               </Field>
-              <Field label="Telefon" optional name="phone" error={errors.phone}>
+              <Field label={t.phone} optional={t.optional} name="phone" error={errors.phone}>
                 <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={30} className={field} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? "phone-err" : undefined} />
               </Field>
-              <Field label="Vrsta objekta" name="venueType" error={errors.venueType} className="sm:col-span-2">
+              <Field label={t.venueType} name="venueType" error={errors.venueType} className="sm:col-span-2">
                 <select id="venueType" name="venueType" required defaultValue="" className={`${field} appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23a1a1aa%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat pr-10`} aria-invalid={!!errors.venueType} aria-describedby={errors.venueType ? "venueType-err" : undefined}>
-                  <option value="" disabled>Odaberite</option>
+                  <option value="" disabled>{t.choose}</option>
                   {venueTypes.map((v) => (
-                    <option key={v.value} value={v.value} className="bg-graphite">{v.label}</option>
+                    <option key={v} value={v} className="bg-graphite">{d.messages.venueTypes[v]}</option>
                   ))}
                 </select>
               </Field>
-              <Field label="Poruka" name="message" error={errors.message} className="sm:col-span-2">
-                <textarea id="message" name="message" rows={4} required maxLength={2000} placeholder="Npr. broj stolova, kada vam je najveća gužva, što biste htjeli riješiti" className={`${field} resize-y`} aria-invalid={!!errors.message} aria-describedby={errors.message ? "message-err" : undefined} />
+              <Field label={t.message} name="message" error={errors.message} className="sm:col-span-2">
+                <textarea id="message" name="message" rows={4} required maxLength={2000} placeholder={t.messagePlaceholder} className={`${field} resize-y`} aria-invalid={!!errors.message} aria-describedby={errors.message ? "message-err" : undefined} />
               </Field>
             </div>
 
             {/* Honeypot — skriveno od ljudi i čitača zaslona */}
             <div aria-hidden className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden">
-              <label htmlFor="website">Web stranica</label>
+              <label htmlFor="website">{t.honeypot}</label>
               <input id="website" name="website" tabIndex={-1} autoComplete="off" />
             </div>
 
@@ -187,15 +193,15 @@ export function ContactForm() {
                   aria-describedby={errors.privacy ? "privacy-err" : undefined}
                 />
                 <span>
-                  Podatke iz obrasca koristimo samo da bismo odgovorili na vaš upit. Pročitao/la sam{" "}
-                  <Link href="/privatnost" className="text-white underline underline-offset-4">obavijest o privatnosti</Link>.
+                  {t.privacyBefore}{" "}
+                  <Link href={href("privacy", locale)} className="text-white underline underline-offset-4">{t.privacyLink}</Link>.
                 </span>
               </label>
               {errors.privacy && <p id="privacy-err" className="mt-2 text-sm text-red-300">{errors.privacy}</p>}
               {/* Zasebna privola za newsletter — neobavezna, nikad unaprijed označena */}
               <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-white/75">
                 <input type="checkbox" name="newsletter" className="mt-0.5 size-5 shrink-0 cursor-pointer accent-white" />
-                <span>Želim primati novosti i ponude Tavle (najviše jednom mjesečno).</span>
+                <span>{t.newsletterConsent}</span>
               </label>
             </div>
 
@@ -203,15 +209,15 @@ export function ContactForm() {
 
             <div className="mt-8 flex flex-col-reverse items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p id="forma-poruka" role={status === "error" ? "alert" : undefined} className={`text-sm ${status === "error" ? "text-red-300" : "text-soft"}`}>
-                {message || "Odgovaramo najčešće unutar jednog radnog dana."}
+                {message || t.hint}
               </p>
               <Button type="submit" size="lg" disabled={status === "sending"} className="shrink-0" data-track="kontakt-cta-submit">
                 {status === "sending" ? (
                   <>
-                    <Loader2 className="size-4 animate-spin" aria-hidden /> Šaljem
+                    <Loader2 className="size-4 animate-spin" aria-hidden /> {t.sending}
                   </>
                 ) : (
-                  "Zatraži demonstraciju"
+                  t.submit
                 )}
               </Button>
             </div>
@@ -222,12 +228,12 @@ export function ContactForm() {
   );
 }
 
-function Field({ label, name, error, optional, className = "", children }: { label: string; name: string; error?: string; optional?: boolean; className?: string; children: React.ReactNode }) {
+function Field({ label, name, error, optional, className = "", children }: { label: string; name: string; error?: string; optional?: string; className?: string; children: React.ReactNode }) {
   return (
     <div className={className}>
       <label htmlFor={name} className="text-sm font-medium text-white/85">
         {label}
-        {optional && <span className="font-normal text-soft"> (neobavezno)</span>}
+        {optional && <span className="font-normal text-soft"> {optional}</span>}
       </label>
       {children}
       {error && <p id={`${name}-err`} className="mt-1.5 text-sm text-red-300">{error}</p>}

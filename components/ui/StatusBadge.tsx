@@ -1,7 +1,11 @@
-import type { FeatureStatus } from "@/content/features";
+"use client";
+
+import type { FeatureStatus } from "@/content/types";
+import { useDict } from "@/components/i18n/LocaleProvider";
 
 /** Oznaka "Uskoro" za značajke u razvoju. Za "live" i "planned" ne prikazuje ništa (planned se ne prikazuje na početnoj). */
 export function SoonBadge({ status, tone = "dark" }: { status: FeatureStatus; tone?: "dark" | "light" }) {
+  const t = useDict().ui.status;
   if (status !== "soon") return null;
   return (
     <span
@@ -9,7 +13,7 @@ export function SoonBadge({ status, tone = "dark" }: { status: FeatureStatus; to
         tone === "dark" ? "bg-white/10 text-white/70" : "bg-ink/[0.06] text-slate"
       }`}
     >
-      Uskoro
+      {t.soon}
     </span>
   );
 }
@@ -19,6 +23,7 @@ export function SoonBadge({ status, tone = "dark" }: { status: FeatureStatus; to
  * Za "live" ne prikazuje ništa.
  */
 export function StatusPill({ status, className = "" }: { status: FeatureStatus; className?: string }) {
+  const t = useDict().ui.status;
   if (status === "live") return null;
   const soon = status === "soon";
   return (
@@ -27,7 +32,7 @@ export function StatusPill({ status, className = "" }: { status: FeatureStatus; 
         soon ? "bg-[#2f6bff]/15 text-[#7aa2ff]" : "bg-white/[0.07] text-white/60"
       } ${className}`}
     >
-      {soon ? "Uskoro" : "U planu"}
+      {soon ? t.soon : t.planned}
     </span>
   );
 }

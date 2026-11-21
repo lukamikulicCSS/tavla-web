@@ -1,17 +1,21 @@
 import Image from "next/image";
-import { partners } from "@/content/partners";
+import { getDict } from "@/content";
+import { anchors, type Locale } from "@/content/routes";
 import { Reveal } from "@/components/ui/Reveal";
 
 /** Sekcija "Partneri": logotipi partnera u kvadratnim karticama, centrirano (naziv je skriven, za čitače ekrana i SEO). */
-export function Partners() {
+export function Partners({ locale }: { locale: Locale }) {
+  const d = getDict(locale);
+  const t = d.home.partners;
+  const partners = d.partners;
   if (partners.length === 0) return null;
 
   return (
-    <section id="partneri" aria-labelledby="partneri-naslov" className="bg-ink py-20 sm:py-24">
+    <section id={anchors[locale].partners} aria-labelledby="partneri-naslov" className="bg-ink py-20 sm:py-24">
       <div className="container-page">
         <Reveal>
           <h2 id="partneri-naslov" className="text-center text-h2 font-semibold">
-            Partneri
+            {t.title}
           </h2>
         </Reveal>
 
@@ -26,7 +30,7 @@ export function Partners() {
                 />
                 <Image
                   src={p.logo}
-                  alt={`${p.name}, logotip`}
+                  alt={t.logoAlt(p.name)}
                   width={240}
                   height={Math.round(240 / p.ratio)}
                   unoptimized
@@ -42,7 +46,7 @@ export function Partners() {
                     href={p.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${p.name} (otvara se u novoj kartici)`}
+                    aria-label={t.newTab(p.name)}
                     className="group block rounded-[1.75rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                   >
                     {card}

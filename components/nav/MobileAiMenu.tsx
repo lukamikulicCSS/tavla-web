@@ -4,13 +4,17 @@ import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { pillars } from "@/content/ai";
+import { href, pillarRoute } from "@/content/routes";
+import { useDict, useLocale } from "@/components/i18n/LocaleProvider";
 import { emit } from "@/lib/analytics/emit";
 import { StatusPill } from "@/components/ui/StatusBadge";
 
 /** "Tavla AI" kao harmonika u mobilnom izborniku (<1024 px). Bez promo kartice. */
 export function MobileAiMenu({ onNavigate }: { onNavigate: () => void }) {
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
+  const d = useDict();
+  const pillars = d.ai.pillars;
   return (
     <div>
       <button
@@ -40,16 +44,16 @@ export function MobileAiMenu({ onNavigate }: { onNavigate: () => void }) {
           >
             <div className="space-y-4 px-2 pb-3 pt-1">
               <Link
-                href="/tavla-ai"
+                href={href("ai", locale)}
                 onClick={onNavigate}
                 className="flex min-h-11 items-center rounded-xl px-2 text-[0.9375rem] font-medium text-[#7aa2ff]"
               >
-                Pregled Tavla AI ekosustava
+                {d.ui.nav.aiOverview}
               </Link>
               {pillars.map((p) => (
                 <div key={p.slug}>
                   <Link
-                    href={`/tavla-ai/${p.slug}`}
+                    href={href(pillarRoute(p.slug), locale)}
                     onClick={onNavigate}
                     className="flex min-h-11 items-center rounded-xl px-2 text-[0.8125rem] font-medium text-soft hover:text-white"
                   >
@@ -59,7 +63,7 @@ export function MobileAiMenu({ onNavigate }: { onNavigate: () => void }) {
                     {p.features.map((f) => (
                       <li key={f.id}>
                         <Link
-                          href={`/tavla-ai/${p.slug}#${f.id}`}
+                          href={href(pillarRoute(p.slug), locale, f.anchor)}
                           onClick={onNavigate}
                           className="flex min-h-11 items-center gap-2 rounded-xl px-2 text-base text-white hover:bg-white/[0.06]"
                         >

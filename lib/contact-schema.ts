@@ -1,50 +1,52 @@
 import { z } from "zod";
+import { getDict } from "@/content";
+import type { Locale } from "@/content/routes";
 
-/** Zajednička shema — ista pravila u pregledniku i na serveru. */
-export const venueTypes = [
-  { value: "kafic", label: "Kafić" },
-  { value: "restoran", label: "Restoran" },
-  { value: "bar", label: "Bar" },
-  { value: "beach-bar", label: "Beach bar" },
-  { value: "nocni-klub", label: "Noćni klub" },
-  { value: "hotel", label: "Hotel" },
-  { value: "ostalo", label: "Ostalo" },
-] as const;
-
-const venueValues = venueTypes.map((v) => v.value) as [string, ...string[]];
+/** Vrste objekata (vrijednosti su iste na oba jezika; nazivi su u content/{hr,en}/messages.ts → venueTypes). */
+export const venueTypes = ["kafic", "restoran", "bar", "beach-bar", "nocni-klub", "hotel", "ostalo"] as const;
+export type VenueType = (typeof venueTypes)[number];
 
 // Uklanja kontrolne znakove (osim novog reda) — ništa od korisnika ne ide u HTML neescapirano.
 const clean = (s: string) => s.replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g, "").trim();
 
-export const contactSchema = z.object({
-  name: z.string().transform(clean).pipe(z.string().min(2, "Upišite ime i prezime.").max(100, "Ime je predugo.")),
-  business: z.string().transform(clean).pipe(z.string().min(2, "Upišite naziv objekta.").max(120, "Naziv je predug.")),
-  email: z.string().transform(clean).pipe(z.email("Upišite ispravnu e-mail adresu.").max(160)),
-  phone: z
-    .string()
-    .transform(clean)
-    .pipe(z.string().max(30, "Broj je predug.").regex(/^[+\d\s()/-]*$/, "Broj smije sadržavati samo znamenke, razmake i +."))
-    .optional()
-    .or(z.literal("")),
-  venueType: z.enum(venueValues, { message: "Odaberite vrstu objekta." }),
-  message: z.string().transform(clean).pipe(z.string().min(10, "Napišite barem nekoliko riječi.").max(2000, "Poruka može imati najviše 2000 znakova.")),
-  privacy: z.literal(true, { message: "Potrebno je potvrditi da ste pročitali obavijest o privatnosti." }),
-  /** Zasebna, neobavezna privola za newsletter (nikad unaprijed označena). */
-  newsletter: z.boolean().optional(),
-  /** Izvor posjeta iz sesije — postoji samo ako je posjetitelj pristao na analitiku. */
-  src: z
-    .object({
-      ref: z.string().max(120).optional(),
-      utmSource: z.string().max(60).optional(),
-      utmMedium: z.string().max(60).optional(),
-      utmCampaign: z.string().max(80).optional(),
-      landing: z.string().max(120).optional(),
-    })
-    .optional(),
-  // Zamke za spam — ne prikazuju se ljudima
-  website: z.string().max(0).optional().or(z.literal("")),
-  startedAt: z.number().int().positive(),
-  turnstileToken: z.string().max(4096).optional(),
-});
+/**
+ * Zajednička shema — ista pravila u pregledniku i na serveru.
+ * Pravila su ista za oba jezika; razlikuju se samo poruke.
+ */
+export function contactSchema(locale: Locale) {
+  const m = getDict(locale).messages.contact;
+  return z.object({
+    name: z.string().transform(clean).pipe(z.string().min(2, m.nameMin).max(100, m.nameMax)),
+    business: z.string().transform(clean).pipe(z.string().min(2, m.businessMin).max(120, m.businessMax)),
+    email: z.string().transform(clean).pipe(z.email(m.email).max(160)),
+    phone: z
+      .string()
+      .transform(clean)
+      .pipe(z.string().max(30, m.phoneMax).regex(/^[+\d\s()/-]*$/, m.phoneChars))
+      .optional()
+      .or(z.literal("")),
+    venueType: z.enum(venueTypes, { message: m.venueType }),
+    message: z.string().transform(clean).pipe(z.string().min(10, m.messageMin).max(2000, m.messageMax)),
+    privacy: z.literal(true, { message: m.privacy }),
+    /** Zasebna, neobavezna privola za newsletter (nikad unaprijed označena). */
+    newsletter: z.boolean().optional(),
+    /** Jezik stranice s koje je upit poslan */
+    locale: z.enum(["hr", "en"]).optional(),
+    /** Izvor posjeta iz sesije — postoji samo ako je posjetitelj pristao na analitiku. */
+    src: z
+      .object({
+        ref: z.string().max(120).optional(),
+        utmSource: z.string().max(60).optional(),
+        utmMedium: z.string().max(60).optional(),
+        utmCampaign: z.string().max(80).optional(),
+        landing: z.string().max(120).optional(),
+      })
+      .optional(),
+    // Zamke za spam — ne prikazuju se ljudima
+    website: z.string().max(0).optional().or(z.literal("")),
+    startedAt: z.number().int().positive(),
+    turnstileToken: z.string().max(4096).optional(),
+  });
+}
 
-export type ContactInput = z.input<typeof contactSchema>;
+export type ContactInput = z.input<ReturnType<typeof contactSchema>>;

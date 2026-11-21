@@ -1,0 +1,74 @@
+{
+  "/images/industries/barovi-klubovi.jpg": {
+    "h": "1d838d9c",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/industries/beach-barovi.jpg": {
+    "h": "b55795b3",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/industries/hoteli.jpg": {
+    "h": "a036bd2c",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/industries/kafici.jpg": {
+    "h": "65cd628b",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/industries/restorani.jpg": {
+    "h": "41c200d2",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/stats/napojnice.jpg": {
+    "h": "f3a6d172",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/stats/recenzije.jpg": {
+    "h": "243a3064",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  },
+  "/images/stats/usteda-vremena.jpg": {
+    "h": "1fd4c50b",
+    "w": [
+      384,
+      640,
+      828,
+      1200
+    ]
+  }
+}

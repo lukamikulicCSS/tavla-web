@@ -29,22 +29,6 @@ export const home = {
     tipsChip: { question: "Dodati napojnicu?", suggested: "Prijedlog" },
   },
 
-  problem: {
-    title: "Manje čekanja. Više iskustva.",
-    lead: "Najveći dio čekanja u kafiću ili restoranu nije priprema, nego hodanje: po meni, po narudžbu, po račun. Tavla to hodanje skraćuje.",
-    caption: "Usporedba: kako je danas i kako je s Tavlom",
-    now: "Danas",
-    withTavla: "S Tavlom",
-    rows: [
-      { now: "Gost čeka da mu netko donese meni.", tavla: "Meni je na stolu, u mobitelu gosta." },
-      { now: "Gost čeka da konobar dođe po narudžbu.", tavla: "Gost naruči kad je spreman, narudžba stiže odmah." },
-      { now: "Dodatna želja se izgubi u gužvi.", tavla: "Poziv konobara i račun stižu s brojem stola." },
-      { now: "Osoblje hoda po narudžbe i zapisuje ih.", tavla: "Osoblje priprema i nosi, a narudžba je već zapisana." },
-      { now: "Vlasnik ne vidi što se događa u smjeni.", tavla: "Narudžbe i prodaja vidljivi su u jednom pregledu." },
-      { now: "Druga tura se ne dogodi jer nitko nije pitao.", tavla: "Prijedlozi uz narudžbu i „Ponovi turu” jednim dodirom." },
-    ],
-  },
-
   how: {
     title: "Tri koraka od stola do narudžbe.",
     lead: "Bez aplikacije za preuzimanje, bez registracije, bez čekanja konobara.",

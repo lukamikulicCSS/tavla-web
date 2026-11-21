@@ -90,7 +90,6 @@ function Card({ ind, hidden = false }: { ind: Industry; hidden?: boolean }) {
           alt={hidden ? "" : ind.imageAlt}
           width={900}
           height={1200}
-          unoptimized
           loading="lazy"
           sizes="(min-width: 640px) 19rem, 15.5rem"
           className="h-full w-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"

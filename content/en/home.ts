@@ -26,22 +26,6 @@ export const home: HomeText = {
     tipsChip: { question: "Add a tip?", suggested: "Suggested" },
   },
 
-  problem: {
-    title: "Less waiting. More experience.",
-    lead: "Most of the waiting in a café or restaurant isn't the cooking. It's the walking: for the menu, for the order, for the bill. Tavla cuts that walking short.",
-    caption: "Comparison: how it works today and how it works with Tavla",
-    now: "Today",
-    withTavla: "With Tavla",
-    rows: [
-      { now: "Guests wait for someone to bring the menu.", tavla: "The menu is on the table, on the guest's phone." },
-      { now: "Guests wait for a waiter to take the order.", tavla: "Guests order when they're ready, and it arrives instantly." },
-      { now: "Extra requests get lost in the rush.", tavla: "Waiter calls and bills arrive with the table number." },
-      { now: "Staff walk for orders and write them down.", tavla: "Staff prepare and serve. The order is already written." },
-      { now: "Owners can't see what's happening on a shift.", tavla: "Orders and sales are visible in one overview." },
-      { now: "The second round never happens because nobody asked.", tavla: "Pairing suggestions and “Another round” in one tap." },
-    ],
-  },
-
   how: {
     title: "Three steps from table to order.",
     lead: "No app to download, no sign-up, no waiting for a waiter.",

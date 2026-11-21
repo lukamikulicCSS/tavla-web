@@ -3,15 +3,14 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
-import { guestStatsCopy, sources, statCards, type Locale, type Stat } from "@/content/guest-stats";
+import { guestStatsCopy, statCards, type Locale, type Stat } from "@/content/guest-stats";
 
-/** Brojke iz industrije na fotografijama, s izvorima. Postavlja se odmah ispod sekcije Partneri. */
+/** Brojke na fotografijama. Izvori su zapisani u content/guest-stats.ts. */
 export function GuestStats({ locale = "hr" }: { locale?: Locale }) {
   const copy = guestStatsCopy[locale];
-  const used = Array.from(new Set(statCards.flatMap((c) => c.stats.map((s) => s.source))));
 
   return (
-    <section aria-labelledby="brojke-naslov" className="bg-ink pb-24 sm:pb-28">
+    <section aria-labelledby="brojke-naslov" className="bg-ink py-24 sm:py-28">
       <div className="container-page">
         <h2 id="brojke-naslov" className="text-h2 font-semibold">
           {copy.title}
@@ -39,31 +38,19 @@ export function GuestStats({ locale = "hr" }: { locale?: Locale }) {
 
               <div className={`absolute inset-x-0 bottom-0 grid gap-5 p-6 sm:p-7 ${card.stats.length > 1 ? "grid-cols-2" : ""}`}>
                 {card.stats.map((s, i) => (
-                  <StatBlock key={i} s={s} n={used.indexOf(s.source) + 1} small={card.stats.length > 1} locale={locale} delay={ci * 120} />
+                  <StatBlock key={i} s={s} small={card.stats.length > 1} locale={locale} delay={ci * 120} />
                 ))}
               </div>
             </li>
           ))}
         </ul>
 
-        <p className="mt-8 text-[0.75rem] leading-relaxed text-white/40">
-          <span>{copy.sourcesLabel}: </span>
-          {used.map((key, i) => (
-            <span key={key}>
-              <sup>{i + 1}</sup>{" "}
-              <a href={sources[key].url} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-white/70 hover:underline">
-                {sources[key].name[locale]}
-              </a>
-              {i < used.length - 1 && <span aria-hidden> · </span>}
-            </span>
-          ))}
-        </p>
       </div>
     </section>
   );
 }
 
-function StatBlock({ s, n, small, locale, delay }: { s: Stat; n: number; small: boolean; locale: Locale; delay: number }) {
+function StatBlock({ s, small, locale, delay }: { s: Stat; small: boolean; locale: Locale; delay: number }) {
   const unit = s.suffix.startsWith(" ");
   return (
     <div>
@@ -78,7 +65,6 @@ function StatBlock({ s, n, small, locale, delay }: { s: Stat; n: number; small: 
       </p>
       <p className="mt-3 text-[0.9375rem] leading-snug text-white/80">
         {s.label[locale]}
-        <sup className="ml-0.5 text-[0.6875rem] text-white/50">{n}</sup>
       </p>
     </div>
   );

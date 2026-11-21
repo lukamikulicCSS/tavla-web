@@ -3,7 +3,6 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { AiSoon } from "@/components/sections/AiSoon";
-import { Problem } from "@/components/sections/Problem";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Experiences } from "@/components/sections/Experiences";
 import { ProductDemo } from "@/components/sections/ProductDemo";
@@ -28,7 +27,7 @@ export function HomePage({ locale }: { locale: Locale }) {
         <Hero />
         <PartnerStrip locale={locale} />
         <AiSoon locale={locale} />
-        <Problem locale={locale} />
+        <GuestStats locale={locale} />
         <HowItWorks />
         <Experiences locale={locale} />
         <ProductDemo />
@@ -37,7 +36,6 @@ export function HomePage({ locale }: { locale: Locale }) {
         <WhyTavla locale={locale} />
         <Team locale={locale} />
         <Partners locale={locale} />
-        <GuestStats locale={locale} />
         <Faq />
         <Contact locale={locale} />
       </main>

@@ -46,7 +46,6 @@ if (typeof window === "undefined") {
   assertSame("tim (imena)", hr.team.map((t) => t.name), en.team.map((t) => t.name));
   assertSame("izjave (broj)", hr.testimonials.length, en.testimonials.length);
   assertSame("koristi (broj)", hr.home.benefits.items.length, en.home.benefits.items.length);
-  assertSame("problem (broj redaka)", hr.home.problem.rows.length, en.home.problem.rows.length);
   assertSame("AI najava (stavke)", hr.home.aiSoon.items.map((i) => i.visual), en.home.aiSoon.items.map((i) => i.visual));
 
   const prices = (d: Dict) => [

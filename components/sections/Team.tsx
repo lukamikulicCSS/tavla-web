@@ -28,7 +28,7 @@ export function Team({ locale }: { locale: Locale }) {
               <article className="flex h-full flex-col gap-7 rounded-[2rem] bg-graphite p-6 sm:flex-row sm:items-center sm:p-8">
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.5rem] bg-graphite-2 sm:w-40 sm:shrink-0">
                   {p.photo ? (
-                    <Image src={p.photo} alt={`${p.name}, ${p.role}`} fill sizes="(min-width: 640px) 10rem, 100vw" className="object-cover" />
+                    <Image src={p.photo} alt={`${p.name}, ${p.role}`} fill sizes="(min-width: 640px) 10rem, calc(100vw - 5.5rem)" className="object-cover" />
                   ) : (
                     <div className="absolute inset-0 grid place-items-center" aria-hidden>
                       <LogoMark className="absolute right-4 top-4 h-4 w-auto text-white/15" />

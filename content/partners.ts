@@ -28,7 +28,7 @@ export const partners: Partner[] = [
     logo: "/partners/emotheo-logo.svg",
     logoMono: "/partners/emotheo-logo-bijeli.svg",
     ratio: 124 / 152,
-    url: "", // [UPISATI] službena stranica hotela, npr. https://...
+    url: "https://emotheo.hr/",
     text: "Prvi heritage hotel u Imotskom uvodi Tavlu za narudžbe svojih gostiju.",
   },
 ];

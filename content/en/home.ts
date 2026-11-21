@@ -106,8 +106,6 @@ export const home: HomeText = {
     title: "Wherever guests sit and order.",
     lead: "From morning coffee on the terrace to a club booth, Tavla works the same: the order from the table reaches staff instantly.",
     listAria: "Venue types",
-    play: "Play",
-    pause: "Pause",
   },
 
   why: {

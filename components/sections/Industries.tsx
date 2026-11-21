@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import type { Industry } from "@/content/types";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -11,13 +10,12 @@ import { useDict } from "@/components/i18n/LocaleProvider";
 /**
  * Pomična traka s fotografijama (zdesna nalijevo).
  * - Miš iznad trake ili prst na njoj → traka stane.
- * - Gumb "Zaustavi" (pristupačnost, WCAG 2.2.2) zaustavlja traku trajno.
+ * - Fokus unutar trake (tipkovnica) → traka stane.
  * - "Smanji pokrete" u sustavu → nema animacije, kartice se listaju prstom/mišem.
  */
 export function Industries() {
   const reduce = useReducedMotion();
   const [touchPaused, setTouchPaused] = useState(false);
-  const [userPaused, setUserPaused] = useState(false);
   const resume = useRef<number | undefined>(undefined);
   const d = useDict();
   const t = d.home.industries;
@@ -53,7 +51,7 @@ export function Industries() {
       ) : (
         <div
           className="tavla-marquee mt-14 [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]"
-          data-paused={touchPaused || userPaused || undefined}
+          data-paused={touchPaused || undefined}
           onTouchStart={holdTouch}
           onTouchEnd={releaseTouch}
           onTouchCancel={releaseTouch}
@@ -62,6 +60,7 @@ export function Industries() {
             @keyframes tavla-marquee { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
             .tavla-marquee .tavla-track { animation: tavla-marquee 55s linear infinite; }
             .tavla-marquee:hover .tavla-track,
+            .tavla-marquee:focus-within .tavla-track,
             .tavla-marquee[data-paused] .tavla-track { animation-play-state: paused; }
           `}</style>
           <div className="tavla-track flex w-max will-change-transform">
@@ -76,20 +75,6 @@ export function Industries() {
               </ul>
             ))}
           </div>
-        </div>
-      )}
-
-      {!reduce && (
-        <div className="container-page mt-6 flex justify-end">
-          <button
-            type="button"
-            onClick={() => setUserPaused((v) => !v)}
-            aria-pressed={userPaused}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-white/[0.06] px-4 text-sm text-soft transition-colors hover:bg-white/10 hover:text-white"
-          >
-            {userPaused ? <Play className="size-3.5" aria-hidden /> : <Pause className="size-3.5" aria-hidden />}
-            {userPaused ? t.play : t.pause}
-          </button>
         </div>
       )}
     </section>

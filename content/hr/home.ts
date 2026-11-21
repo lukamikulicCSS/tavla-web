@@ -114,8 +114,6 @@ export const home = {
     title: "Gdje god gost sjedi i naručuje.",
     lead: "Od jutarnje kave na terasi do separea u klubu, Tavla radi isto: narudžba sa stola stiže osoblju odmah.",
     listAria: "Vrste objekata",
-    play: "Pokreni",
-    pause: "Zaustavi",
   },
 
   why: {
